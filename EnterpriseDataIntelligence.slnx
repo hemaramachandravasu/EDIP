@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Edip.Api/Edip.Api.csproj" />
+    <Project Path="src/Edip.Core/Edip.Core.csproj" />
+    <Project Path="src/Edip.Infrastructure/Edip.Infrastructure.csproj" />
+    <Project Path="src/Edip.Worker/Edip.Worker.csproj" />
+  </Folder>
+</Solution>

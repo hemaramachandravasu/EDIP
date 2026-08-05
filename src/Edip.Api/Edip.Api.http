@@ -1,0 +1,25 @@
+@Edip.Api_HostAddress = https://localhost:7xxx
+@ApiKey = edip-dev-api-key
+
+### Health
+GET {{Edip.Api_HostAddress}}/health
+
+### List data sources
+GET {{Edip.Api_HostAddress}}/api/datasources
+X-Api-Key: {{ApiKey}}
+
+### Validate data source
+POST {{Edip.Api_HostAddress}}/api/datasources/AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA/validate
+X-Api-Key: {{ApiKey}}
+
+### Refresh metadata
+POST {{Edip.Api_HostAddress}}/api/metadata/refresh/AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA
+X-Api-Key: {{ApiKey}}
+
+### Execute job
+POST {{Edip.Api_HostAddress}}/api/jobs/CCCCCCCC-CCCC-CCCC-CCCC-CCCCCCCCCCCC/execute
+X-Api-Key: {{ApiKey}}
+
+### Export health report
+GET {{Edip.Api_HostAddress}}/api/reports/datasource-health/export?format=xlsx
+X-Api-Key: {{ApiKey}}

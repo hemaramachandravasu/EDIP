@@ -13,6 +13,7 @@ public sealed class ProcessingJobService(
     IProfilingService profilingService,
     IQualityAssessmentService qualityAssessmentService,
     IMetadataSyncService metadataSyncService,
+    IIngestionService ingestionService,
     ILogger<ProcessingJobService> logger) : IProcessingJobService
 {
     public async Task<IReadOnlyList<ProcessingJobDto>> GetAllAsync(CancellationToken ct = default)
@@ -298,6 +299,17 @@ public sealed class ProcessingJobService(
             case ProcessingJobType.ArchiveProfilingHistory:
                 await metadataSyncService.ArchiveHistoryAsync(90, ct);
                 await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived DQ history older than 90 days.", ct);
+                break;
+
+            case ProcessingJobType.ProcessPendingImports:
+                var batches = await ingestionService.ProcessPendingBatchesAsync(25, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info",
+                    $"Processed {batches} pending import batch(es).", ct);
+                break;
+
+            case ProcessingJobType.ArchiveImportHistory:
+                await ingestionService.ArchiveImportHistoryAsync(90, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived import history older than 90 days.", ct);
                 break;
 
             default:

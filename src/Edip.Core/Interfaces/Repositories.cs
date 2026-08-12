@@ -59,6 +59,12 @@ public interface IReportRepository
     Task<IReadOnlyList<DTOs.SchemaChangeHistoryRow>> GetSchemaChangeHistoryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.MetadataSyncStatusRow>> GetMetadataSyncStatusAsync(CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.QualityTrendRow>> GetQualityTrendAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ImportSummaryRow>> GetImportSummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.BatchProcessingHistoryRow>> GetBatchProcessingHistoryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ValidationErrorReportRow>> GetValidationErrorsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetProcessingStatisticsRow>> GetDatasetProcessingStatisticsAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ImportErrorTrendRow>> GetImportErrorTrendsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.BatchProcessingHistoryRow>> GetFailedImportsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
 }
 
 public interface IQualityRepository
@@ -78,4 +84,21 @@ public interface IQualityRepository
     Task<IReadOnlyList<SchemaChangeEvent>> GetSchemaChangesAsync(Guid dataSourceId, int take = 50, CancellationToken ct = default);
     Task<IReadOnlyList<MetadataSyncLog>> GetSyncLogsAsync(Guid dataSourceId, int take = 20, CancellationToken ct = default);
     Task ArchiveHistoryAsync(int retainDays, CancellationToken ct = default);
+}
+
+public interface IIngestionRepository
+{
+    Task<IReadOnlyList<IngestDataset>> GetDatasetsAsync(CancellationToken ct = default);
+    Task<Guid> CreateBatchAsync(string datasetCode, Guid? dataSourceId, string? sourceInfo, CancellationToken ct = default);
+    Task LoadStagingCustomersAsync(Guid batchId, Guid datasetId, IReadOnlyList<StagingCustomerRow> rows, string? sourceInfo, CancellationToken ct = default);
+    Task CompleteStagingLoadAsync(Guid batchId, CancellationToken ct = default);
+    Task<ImportBatch?> GetBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task ValidateBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task ProcessBatchAsync(Guid batchId, string triggerType, CancellationToken ct = default);
+    Task RetryBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<ImportError>> GetErrorsByBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<ImportError>> GetErrorsByDatasetAsync(string datasetCode, DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<int> ProcessPendingBatchesAsync(int maxBatches, CancellationToken ct = default);
+    Task ArchiveImportHistoryAsync(int retainDays, CancellationToken ct = default);
+    Task<Guid?> GetDatasetIdByCodeAsync(string datasetCode, CancellationToken ct = default);
 }

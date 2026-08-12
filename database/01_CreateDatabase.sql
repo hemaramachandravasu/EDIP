@@ -31,5 +31,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'dq')
     EXEC(N'CREATE SCHEMA dq AUTHORIZATION dbo;');
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'ingest')
+    EXEC(N'CREATE SCHEMA ingest AUTHORIZATION dbo;');
+GO
+
 PRINT 'EDIP database and schemas ready.';
 GO

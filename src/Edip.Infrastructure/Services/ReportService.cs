@@ -29,8 +29,20 @@ public sealed class ReportService(
                 await reportRepository.GetMetadataSyncStatusAsync(ct),
             "quality-trend" or "qualitytrendanalysis" =>
                 await reportRepository.GetQualityTrendAsync(from, to, ct),
+            "import-summary" or "importsummary" =>
+                await reportRepository.GetImportSummaryAsync(from, to, ct),
+            "batch-history" or "batchprocessinghistory" =>
+                await reportRepository.GetBatchProcessingHistoryAsync(from, to, ct),
+            "validation-errors" or "validationerrors" =>
+                await reportRepository.GetValidationErrorsAsync(from, to, ct),
+            "dataset-processing" or "datasetprocessingstatistics" =>
+                await reportRepository.GetDatasetProcessingStatisticsAsync(ct),
+            "import-error-trends" or "importerrortrends" =>
+                await reportRepository.GetImportErrorTrendsAsync(from, to, ct),
+            "failed-imports" or "failedimports" =>
+                await reportRepository.GetFailedImportsAsync(from, to, ct),
             _ => throw new ArgumentException(
-                $"Unknown report '{reportName}'. Valid: processing-summary, datasource-health, job-stats, metadata-refresh, data-quality, dataset-health, schema-changes, metadata-sync, quality-trend.")
+                $"Unknown report '{reportName}'. Valid: processing-summary, datasource-health, job-stats, metadata-refresh, data-quality, dataset-health, schema-changes, metadata-sync, quality-trend, import-summary, batch-history, validation-errors, dataset-processing, import-error-trends, failed-imports.")
         };
     }
 
@@ -62,6 +74,11 @@ public sealed class ReportService(
         IEnumerable<Core.DTOs.SchemaChangeHistoryRow> rows => exportService.ExportToCsv(rows),
         IEnumerable<Core.DTOs.MetadataSyncStatusRow> rows => exportService.ExportToCsv(rows),
         IEnumerable<Core.DTOs.QualityTrendRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.ImportSummaryRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.BatchProcessingHistoryRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.ValidationErrorReportRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.DatasetProcessingStatisticsRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.ImportErrorTrendRow> rows => exportService.ExportToCsv(rows),
         _ => exportService.ExportToCsv(Array.Empty<object>())
     };
 
@@ -76,6 +93,11 @@ public sealed class ReportService(
         IEnumerable<Core.DTOs.SchemaChangeHistoryRow> rows => exportService.ExportToExcel(rows, sheet),
         IEnumerable<Core.DTOs.MetadataSyncStatusRow> rows => exportService.ExportToExcel(rows, sheet),
         IEnumerable<Core.DTOs.QualityTrendRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.ImportSummaryRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.BatchProcessingHistoryRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.ValidationErrorReportRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.DatasetProcessingStatisticsRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.ImportErrorTrendRow> rows => exportService.ExportToExcel(rows, sheet),
         _ => exportService.ExportToExcel(Array.Empty<object>(), sheet)
     };
 

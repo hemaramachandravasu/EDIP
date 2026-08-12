@@ -17,7 +17,11 @@ $scripts = @(
     "10_Schema_Quality.sql",
     "11_Procs_Quality.sql",
     "12_Views_Quality.sql",
-    "13_Seed_Quality.sql"
+    "13_Seed_Quality.sql",
+    "15_Schema_Ingestion.sql",
+    "16_Procs_Ingestion.sql",
+    "17_Views_Ingestion.sql",
+    "18_Seed_Ingestion.sql"
 )
 
 $dbDir = Join-Path $ScriptRoot "database"
@@ -28,5 +32,5 @@ foreach ($file in $scripts) {
     if ($LASTEXITCODE -ne 0) { throw "Failed on $file" }
 }
 
-Write-Host "Core EDIP database deployment complete."
-Write-Host "Publish Edip.Worker, then run database\09_SqlAgentJobs.sql."
+Write-Host "Core EDIP database deployment complete (registry, metadata, jobs, quality, ingestion)."
+Write-Host "Publish Edip.Worker, then run database\09_SqlAgentJobs.sql, 14_SqlAgentJobs_Quality.sql, 19_SqlAgentJobs_Ingestion.sql."

@@ -25,5 +25,7 @@ public enum ProcessingJobType
     DataProfiling = 4,
     QualityAssessment = 5,
     MetadataSync = 6,
-    ArchiveProfilingHistory = 7
+    ArchiveProfilingHistory = 7,
+    ProcessPendingImports = 8,
+    ArchiveImportHistory = 9
 }

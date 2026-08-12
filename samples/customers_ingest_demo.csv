@@ -1,0 +1,11 @@
+CustomerCode,CustomerName,CountryCode,Email,CreditLimit,Status,CreatedDate
+CUST-001,Acme Corp,US,ops@acme.example,10000,Active,2024-01-15
+CUST-002,Globex,UK,info@globex.example,25000,Active,2024-02-20
+CUST-003,Initech,US,hello@initech.example,5000,Prospect,2024-03-01
+,No Code Inc,US,a@b.com,100,Active,2024-01-01
+CUST-005,Unknown Land,ZZ,zz@example.com,100,Active,2024-01-01
+CUST-006,Bad Email Co,DE,not-an-email,-50,Active,2024-01-01
+CUST-001,Acme Duplicate,US,dup@acme.example,1,Active,2024-01-15
+CUST-008,Bad Date LLC,CA,date@example.com,200,Active,not-a-date
+CUST-009,Weird Status,IN,status@example.com,300,Suspended,2024-06-01
+CUST-010,Stark Industries,US,tony@stark.example,99999,Active,2024-04-02

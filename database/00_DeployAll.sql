@@ -14,6 +14,10 @@
 :r .\11_Procs_Quality.sql
 :r .\12_Views_Quality.sql
 :r .\13_Seed_Quality.sql
+:r .\15_Schema_Ingestion.sql
+:r .\16_Procs_Ingestion.sql
+:r .\17_Views_Ingestion.sql
+:r .\18_Seed_Ingestion.sql
 
-PRINT 'EDIP core + quality deployment complete. Run 09/14 Agent scripts after publishing Edip.Worker.';
+PRINT 'EDIP core + quality + ingestion deployment complete. Run 09/14/19 Agent scripts after publishing Edip.Worker.';
 GO

@@ -235,4 +235,160 @@ public sealed class ReportRepository(ISqlConnectionFactory connectionFactory) : 
         }
         return list;
     }
+
+    public async Task<IReadOnlyList<ImportSummaryRow>> GetImportSummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<ImportSummaryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_ImportSummary @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new ImportSummaryRow
+            {
+                DayUtc = reader.GetDateTime("DayUtc"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                TotalBatches = reader.GetInt32("TotalBatches"),
+                SuccessfulBatches = reader.GetInt32("SuccessfulBatches"),
+                FailedBatches = reader.GetInt32("FailedBatches"),
+                SuccessRatePct = reader.GetDecimal("SuccessRatePct"),
+                TotalRecords = reader.GetInt32("TotalRecords"),
+                ProcessedRecords = reader.GetInt32("ProcessedRecords"),
+                RejectedRecords = reader.GetInt32("RejectedRecords")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<BatchProcessingHistoryRow>> GetBatchProcessingHistoryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<BatchProcessingHistoryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_BatchProcessingHistory @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+            list.Add(MapBatchHistory(reader));
+        return list;
+    }
+
+    public async Task<IReadOnlyList<ValidationErrorReportRow>> GetValidationErrorsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<ValidationErrorReportRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_ValidationErrors @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new ValidationErrorReportRow
+            {
+                ErrorId = reader.GetInt64("ErrorId"),
+                BatchId = reader.GetGuid("BatchId"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                RowReference = reader.GetNullableString("RowReference"),
+                ColumnName = reader.GetNullableString("ColumnName"),
+                InvalidValue = reader.GetNullableString("InvalidValue"),
+                ErrorCode = reader.GetString("ErrorCode"),
+                ErrorDescription = reader.GetString("ErrorDescription"),
+                Severity = reader.GetString("Severity"),
+                ErrorUtc = reader.GetDateTime("ErrorUtc")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<DatasetProcessingStatisticsRow>> GetDatasetProcessingStatisticsAsync(CancellationToken ct = default)
+    {
+        var list = new List<DatasetProcessingStatisticsRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_DatasetProcessingStatistics;", conn);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new DatasetProcessingStatisticsRow
+            {
+                DatasetId = reader.GetGuid("DatasetId"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                DisplayName = reader.GetString("DisplayName"),
+                BatchCount = reader.GetInt32("BatchCount"),
+                TotalRecords = reader.GetInt32("TotalRecords"),
+                ProcessedRecords = reader.GetInt32("ProcessedRecords"),
+                RejectedRecords = reader.GetInt32("RejectedRecords"),
+                InsertedRecords = reader.GetInt32("InsertedRecords"),
+                UpdatedRecords = reader.GetInt32("UpdatedRecords"),
+                ErrorCount = reader.GetInt32("ErrorCount"),
+                AvgDurationSeconds = reader.GetNullableDouble("AvgDurationSeconds"),
+                LastImportUtc = reader.GetNullableDateTime("LastImportUtc"),
+                LastSuccessUtc = reader.GetNullableDateTime("LastSuccessUtc")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<ImportErrorTrendRow>> GetImportErrorTrendsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<ImportErrorTrendRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_ImportErrorTrends @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new ImportErrorTrendRow
+            {
+                DayUtc = reader.GetDateTime("DayUtc"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                ErrorCode = reader.GetString("ErrorCode"),
+                ErrorCount = reader.GetInt32("ErrorCount")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<BatchProcessingHistoryRow>> GetFailedImportsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<BatchProcessingHistoryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_FailedImports @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+            list.Add(MapBatchHistory(reader));
+        return list;
+    }
+
+    private static BatchProcessingHistoryRow MapBatchHistory(SqlDataReader reader) => new()
+    {
+        BatchId = reader.GetGuid("BatchId"),
+        DatasetCode = reader.GetString("DatasetCode"),
+        DatasetName = reader.GetString("DatasetName"),
+        SourceInfo = reader.GetNullableString("SourceInfo"),
+        Status = reader.GetString("Status"),
+        TotalRecords = reader.GetInt32("TotalRecords"),
+        ValidRecords = reader.IsDBNull(reader.GetOrdinal("ValidRecords")) ? 0 : reader.GetInt32("ValidRecords"),
+        RejectedRecords = reader.GetInt32("RejectedRecords"),
+        ProcessedRecords = reader.IsDBNull(reader.GetOrdinal("ProcessedRecords")) ? 0 : reader.GetInt32("ProcessedRecords"),
+        InsertedRecords = reader.IsDBNull(reader.GetOrdinal("InsertedRecords")) ? 0 : reader.GetInt32("InsertedRecords"),
+        UpdatedRecords = reader.IsDBNull(reader.GetOrdinal("UpdatedRecords")) ? 0 : reader.GetInt32("UpdatedRecords"),
+        ErrorCount = reader.GetInt32("ErrorCount"),
+        AttemptCount = reader.IsDBNull(reader.GetOrdinal("AttemptCount")) ? 0 : reader.GetInt32("AttemptCount"),
+        ImportUtc = reader.GetDateTime("ImportUtc"),
+        StartedUtc = reader.GetNullableDateTime("StartedUtc"),
+        CompletedUtc = reader.GetNullableDateTime("CompletedUtc"),
+        DurationSeconds = reader.GetNullableDouble("DurationSeconds"),
+        LastErrorMessage = reader.GetNullableString("LastErrorMessage")
+    };
 }

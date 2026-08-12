@@ -90,3 +90,17 @@ public interface IMetadataSyncService
     Task<IReadOnlyList<DTOs.SchemaChangeEventDto>> GetSchemaChangesAsync(Guid dataSourceId, CancellationToken ct = default);
     Task ArchiveHistoryAsync(int retainDays = 90, CancellationToken ct = default);
 }
+
+public interface IIngestionService
+{
+    Task<IReadOnlyList<DTOs.IngestDatasetDto>> GetDatasetsAsync(CancellationToken ct = default);
+    Task<DTOs.ImportBatchDto> CreateBatchAsync(DTOs.CreateImportBatchRequest request, CancellationToken ct = default);
+    Task<DTOs.ImportBatchDto?> GetBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<DTOs.ImportBatchDto> ValidateBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<DTOs.ImportBatchDto> ProcessBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<DTOs.ImportBatchDto> RetryBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ImportErrorDto>> GetErrorsByBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ImportErrorDto>> GetErrorsByDatasetAsync(string datasetCode, DateTime? fromUtc, DateTime? toUtc, CancellationToken ct = default);
+    Task<int> ProcessPendingBatchesAsync(int maxBatches = 10, CancellationToken ct = default);
+    Task ArchiveImportHistoryAsync(int retainDays = 90, CancellationToken ct = default);
+}

@@ -133,6 +133,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [Metadata Synchronization Design](docs/08-Metadata-Synchronization-Design.md)
 - [Automation Strategy](docs/09-Automation-Strategy.md)
 - [Future Enhancement Recommendations](docs/10-Future-Enhancement-Recommendations.md)
+- [Data Ingestion Pipeline](docs/11-Data-Ingestion-Pipeline.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -149,6 +150,24 @@ GET  /api/reports/quality-trend/export?format=xlsx
 
 Local catalog demo id: `AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA`
 
+## Data Ingestion module (staging / validation / monitoring)
+
+```http
+POST /api/ingestion/batches
+POST /api/ingestion/batches/{batchId}/validate
+POST /api/ingestion/batches/{batchId}/process
+POST /api/ingestion/batches/{batchId}/retry
+GET  /api/ingestion/batches/{batchId}/errors
+GET  /api/reports/import-summary/export?format=xlsx
+GET  /api/reports/batch-history/export?format=csv
+GET  /api/reports/validation-errors
+GET  /api/reports/dataset-processing
+GET  /api/reports/failed-imports
+```
+
+Deploy SQL scripts `15`–`18` (included in `00_DeployAll.sql` / `Deploy-Edip.ps1`), then optionally `19_SqlAgentJobs_Ingestion.sql`.  
+See [Data Ingestion Pipeline](docs/11-Data-Ingestion-Pipeline.md) and [test scenarios](samples/INGESTION_TEST_SCENARIOS.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -158,3 +177,4 @@ Local catalog demo id: `AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA`
 6. Technical documentation
 7. Data profiling, quality scoring, metadata sync with schema-change history
 8. SQL Agent automation for profiling / sync / archive jobs
+9. Staging ingestion, validation, curated load, error history, import monitoring & scheduled processing

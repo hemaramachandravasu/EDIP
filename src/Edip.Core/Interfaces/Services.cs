@@ -104,3 +104,17 @@ public interface IIngestionService
     Task<int> ProcessPendingBatchesAsync(int maxBatches = 10, CancellationToken ct = default);
     Task ArchiveImportHistoryAsync(int retainDays = 90, CancellationToken ct = default);
 }
+
+public interface IEtlService
+{
+    Task<DTOs.ImportBatchDto> RunPipelineAsync(Guid batchId, bool forceFail = false, CancellationToken ct = default);
+    Task<DTOs.ImportBatchDto> RetryAsync(Guid batchId, CancellationToken ct = default);
+    Task<DTOs.ImportBatchDto?> GetBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlErrorDto>> GetErrorsByBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlErrorDto>> GetErrorsByDatasetAsync(string datasetCode, DateTime? fromUtc, DateTime? toUtc, CancellationToken ct = default);
+    Task<int> ProcessPendingAsync(int maxBatches = 10, CancellationToken ct = default);
+    Task ArchiveErrorsAsync(int retainDays = 90, CancellationToken ct = default);
+    Task CleanupBatchesAsync(int retainDays = 90, CancellationToken ct = default);
+    Task GenerateQualitySnapshotAsync(CancellationToken ct = default);
+    Task<Guid> GenerateTestBatchAsync(int rowCount = 1000, CancellationToken ct = default);
+}

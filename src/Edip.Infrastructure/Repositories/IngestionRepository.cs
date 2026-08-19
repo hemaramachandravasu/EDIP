@@ -46,7 +46,14 @@ public sealed class IngestionRepository(ISqlConnectionFactory connectionFactory)
         return result is Guid g ? g : null;
     }
 
-    public async Task<Guid> CreateBatchAsync(string datasetCode, Guid? dataSourceId, string? sourceInfo, CancellationToken ct = default)
+    public async Task<Guid> CreateBatchAsync(
+        string datasetCode,
+        Guid? dataSourceId,
+        string? sourceInfo,
+        CancellationToken ct = default,
+        string? sourceFile = null,
+        string? loadMode = null,
+        string? duplicateStrategy = null)
     {
         await using var conn = connectionFactory.CreateConnection();
         await conn.OpenAsync(ct);
@@ -57,6 +64,9 @@ public sealed class IngestionRepository(ISqlConnectionFactory connectionFactory)
         cmd.Parameters.AddWithValue("@DatasetCode", datasetCode);
         cmd.Parameters.AddNullable("@DataSourceId", dataSourceId);
         cmd.Parameters.AddNullable("@SourceInfo", sourceInfo);
+        cmd.Parameters.AddNullable("@SourceFile", sourceFile);
+        cmd.Parameters.AddNullable("@LoadMode", loadMode);
+        cmd.Parameters.AddNullable("@DuplicateStrategy", duplicateStrategy);
         var batchParam = new SqlParameter("@BatchId", SqlDbType.UniqueIdentifier)
         {
             Direction = ParameterDirection.InputOutput,
@@ -273,6 +283,10 @@ public sealed class IngestionRepository(ISqlConnectionFactory connectionFactory)
         DatasetName = reader.GetString("DatasetName"),
         DataSourceId = reader.IsDBNull(reader.GetOrdinal("DataSourceId")) ? null : reader.GetGuid("DataSourceId"),
         SourceInfo = reader.GetNullableString("SourceInfo"),
+        ImportId = HasColumn(reader, "ImportId") && !reader.IsDBNull(reader.GetOrdinal("ImportId")) ? reader.GetGuid("ImportId") : null,
+        SourceFile = HasColumn(reader, "SourceFile") ? reader.GetNullableString("SourceFile") : null,
+        LoadMode = HasColumn(reader, "LoadMode") ? reader.GetNullableString("LoadMode") ?? "Incremental" : "Incremental",
+        DuplicateStrategy = HasColumn(reader, "DuplicateStrategy") ? reader.GetNullableString("DuplicateStrategy") ?? "Update" : "Update",
         ImportUtc = reader.GetDateTime("ImportUtc"),
         Status = reader.GetString("Status"),
         TotalRecords = reader.GetInt32("TotalRecords"),
@@ -281,13 +295,27 @@ public sealed class IngestionRepository(ISqlConnectionFactory connectionFactory)
         ProcessedRecords = reader.GetInt32("ProcessedRecords"),
         InsertedRecords = reader.GetInt32("InsertedRecords"),
         UpdatedRecords = reader.GetInt32("UpdatedRecords"),
+        TransformedRecords = HasColumn(reader, "TransformedRecords") ? reader.GetInt32("TransformedRecords") : 0,
+        DuplicateRecords = HasColumn(reader, "DuplicateRecords") ? reader.GetInt32("DuplicateRecords") : 0,
         ErrorCount = reader.GetInt32("ErrorCount"),
         AttemptCount = reader.GetInt32("AttemptCount"),
+        MaxRetries = HasColumn(reader, "MaxRetries") ? reader.GetInt32("MaxRetries") : 0,
         StartedUtc = reader.GetNullableDateTime("StartedUtc"),
         CompletedUtc = reader.GetNullableDateTime("CompletedUtc"),
         DurationSeconds = reader.GetNullableDouble("DurationSeconds"),
+        DurationMs = HasColumn(reader, "DurationMs") ? reader.GetNullableInt32("DurationMs") : null,
         LastErrorMessage = reader.GetNullableString("LastErrorMessage")
     };
+
+    private static bool HasColumn(SqlDataReader reader, string name)
+    {
+        for (var i = 0; i < reader.FieldCount; i++)
+        {
+            if (string.Equals(reader.GetName(i), name, StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+        return false;
+    }
 
     private static ImportError MapError(SqlDataReader reader, bool includeDatasetCode = false) => new()
     {

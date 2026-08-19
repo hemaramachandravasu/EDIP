@@ -8,6 +8,10 @@ public sealed class ImportBatch
     public string DatasetName { get; set; } = string.Empty;
     public Guid? DataSourceId { get; set; }
     public string? SourceInfo { get; set; }
+    public Guid? ImportId { get; set; }
+    public string? SourceFile { get; set; }
+    public string LoadMode { get; set; } = "Incremental";
+    public string DuplicateStrategy { get; set; } = "Update";
     public DateTime ImportUtc { get; set; }
     public string Status { get; set; } = "Pending";
     public int TotalRecords { get; set; }
@@ -16,8 +20,12 @@ public sealed class ImportBatch
     public int ProcessedRecords { get; set; }
     public int InsertedRecords { get; set; }
     public int UpdatedRecords { get; set; }
+    public int TransformedRecords { get; set; }
+    public int DuplicateRecords { get; set; }
     public int ErrorCount { get; set; }
     public int AttemptCount { get; set; }
+    public int MaxRetries { get; set; }
+    public int? DurationMs { get; set; }
     public DateTime? StartedUtc { get; set; }
     public DateTime? CompletedUtc { get; set; }
     public double? DurationSeconds { get; set; }

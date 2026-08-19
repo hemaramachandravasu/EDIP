@@ -3,7 +3,7 @@
 ## Database
 - Name: `EDIP`
 - Engine: Microsoft SQL Server
-- Deployment scripts: `database/01_*.sql` … `database/19_*.sql` (orchestrated by `00_DeployAll.sql`)
+- Deployment scripts: `database/01_*.sql` … `database/24_*.sql` (orchestrated by `00_DeployAll.sql`)
 
 ## Schema map
 
@@ -44,6 +44,18 @@
 | Customer | Curated target dataset |
 | Country | Reference data for RI validation |
 
+### ETL (`etl`)
+| Table | Description |
+|-------|-------------|
+| DatasetConfig | Load mode, duplicate strategy, max retries |
+| TransformRule | Reusable per-column transform steps |
+| StandardizationMap | Source → canonical value |
+| ValidationRule | Configurable validation |
+| AllowedValue / ReferentialRule | Domain and RI helpers |
+| EtlRun | Pipeline attempt metrics and duration |
+| EtlError / EtlErrorArchive | Dedicated error structure + archive |
+| QualitySnapshot | Scheduled dataset-level ETL quality |
+
 ### Reporting (`rpt`)
 Views and procedures:
 - `vw_ProcessingSuccessFailureSummary` / `usp_ProcessingSuccessFailureSummary`
@@ -51,6 +63,7 @@ Views and procedures:
 - `vw_JobExecutionStatistics` / `usp_JobExecutionStatistics`
 - `vw_MetadataRefreshStatus` / `usp_MetadataRefreshStatus`
 - Import monitoring: `usp_ImportSummary`, `usp_BatchProcessingHistory`, `usp_ValidationErrors`, `usp_DatasetProcessingStatistics`, `usp_ImportErrorTrends`, `usp_FailedImports`
+- ETL monitoring: `usp_EtlBatchSummary`, `usp_EtlSuccessRate`, `usp_EtlFailedBatches`, `usp_EtlValidationErrorSummary`, `usp_EtlDatasetHistory`
 
 ## Indexing highlights
 - Filtered unique index on `reg.DataSource(Name)` where not deleted
@@ -59,6 +72,7 @@ Views and procedures:
 - `ingest.ImportBatch(Status)` filtered covering index for pending-batch scans
 - `ingest.StagingCustomer(BatchId, RowStatus)` for validation/process set operations
 - Unique `ingest.Customer(CustomerCode)` for MERGE upserts
+- `etl.EtlRun(DatasetId, StartedUtc)` and `etl.EtlError(BatchId, ErrorCode)` for monitoring
 
 ## Security considerations
 - Encrypted passwords stored only in `reg.SqlConnectionDetail.EncryptedPassword`
@@ -67,4 +81,5 @@ Views and procedures:
 
 ## Seed data
 `08_SeedData.sql` inserts connector types, a local SQL catalog source, a sample CSV source, and two demo jobs (health check + metadata refresh).  
-`18_Seed_Ingestion.sql` seeds countries, the CUSTOMER dataset, import Agent jobs, and a mixed valid/invalid demo batch.
+`18_Seed_Ingestion.sql` seeds countries, the CUSTOMER dataset, import Agent jobs, and a mixed valid/invalid demo batch.  
+`23_Seed_Etl.sql` seeds transform/validation rules, ETL jobs, and a transformation demo batch.

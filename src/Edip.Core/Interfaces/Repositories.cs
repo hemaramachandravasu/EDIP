@@ -65,6 +65,11 @@ public interface IReportRepository
     Task<IReadOnlyList<DTOs.DatasetProcessingStatisticsRow>> GetDatasetProcessingStatisticsAsync(CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.ImportErrorTrendRow>> GetImportErrorTrendsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.BatchProcessingHistoryRow>> GetFailedImportsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlBatchSummaryRow>> GetEtlBatchSummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlSuccessRateRow>> GetEtlSuccessRateAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlFailedBatchRow>> GetEtlFailedBatchesAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlValidationErrorSummaryRow>> GetEtlValidationErrorSummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlDatasetHistoryRow>> GetEtlDatasetHistoryAsync(CancellationToken ct = default);
 }
 
 public interface IQualityRepository
@@ -89,7 +94,7 @@ public interface IQualityRepository
 public interface IIngestionRepository
 {
     Task<IReadOnlyList<IngestDataset>> GetDatasetsAsync(CancellationToken ct = default);
-    Task<Guid> CreateBatchAsync(string datasetCode, Guid? dataSourceId, string? sourceInfo, CancellationToken ct = default);
+    Task<Guid> CreateBatchAsync(string datasetCode, Guid? dataSourceId, string? sourceInfo, CancellationToken ct = default, string? sourceFile = null, string? loadMode = null, string? duplicateStrategy = null);
     Task LoadStagingCustomersAsync(Guid batchId, Guid datasetId, IReadOnlyList<StagingCustomerRow> rows, string? sourceInfo, CancellationToken ct = default);
     Task CompleteStagingLoadAsync(Guid batchId, CancellationToken ct = default);
     Task<ImportBatch?> GetBatchAsync(Guid batchId, CancellationToken ct = default);
@@ -101,4 +106,17 @@ public interface IIngestionRepository
     Task<int> ProcessPendingBatchesAsync(int maxBatches, CancellationToken ct = default);
     Task ArchiveImportHistoryAsync(int retainDays, CancellationToken ct = default);
     Task<Guid?> GetDatasetIdByCodeAsync(string datasetCode, CancellationToken ct = default);
+}
+
+public interface IEtlRepository
+{
+    Task RunPipelineAsync(Guid batchId, string triggerType, bool forceFail, CancellationToken ct = default);
+    Task RetryBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlErrorDto>> GetErrorsByBatchAsync(Guid batchId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.EtlErrorDto>> GetErrorsByDatasetAsync(string datasetCode, DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<int> ProcessPendingAsync(int maxBatches, CancellationToken ct = default);
+    Task ArchiveErrorsAsync(int retainDays, CancellationToken ct = default);
+    Task CleanupBatchesAsync(int retainDays, CancellationToken ct = default);
+    Task GenerateQualitySnapshotAsync(CancellationToken ct = default);
+    Task<Guid> GenerateTestBatchAsync(int rowCount, CancellationToken ct = default);
 }

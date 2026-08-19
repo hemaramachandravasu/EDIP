@@ -27,5 +27,9 @@ public enum ProcessingJobType
     MetadataSync = 6,
     ArchiveProfilingHistory = 7,
     ProcessPendingImports = 8,
-    ArchiveImportHistory = 9
+    ArchiveImportHistory = 9,
+    EtlProcessPending = 10,
+    EtlArchiveErrors = 11,
+    EtlQualitySnapshot = 12,
+    EtlBatchCleanup = 13
 }

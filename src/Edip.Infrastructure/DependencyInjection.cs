@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IReportRepository, ReportRepository>();
         services.AddScoped<IQualityRepository, QualityRepository>();
         services.AddScoped<IIngestionRepository, IngestionRepository>();
+        services.AddScoped<IEtlRepository, EtlRepository>();
 
         services.AddSingleton<FileProbe>();
         services.AddSingleton<IConnectionProbe, SqlServerProbe>();
@@ -54,6 +55,7 @@ public static class DependencyInjection
         services.AddScoped<IQualityAssessmentService, QualityAssessmentService>();
         services.AddScoped<IMetadataSyncService, MetadataSyncService>();
         services.AddScoped<IIngestionService, IngestionService>();
+        services.AddScoped<IEtlService, EtlService>();
 
         return services;
     }

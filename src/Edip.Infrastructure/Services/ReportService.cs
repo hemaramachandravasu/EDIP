@@ -41,8 +41,18 @@ public sealed class ReportService(
                 await reportRepository.GetImportErrorTrendsAsync(from, to, ct),
             "failed-imports" or "failedimports" =>
                 await reportRepository.GetFailedImportsAsync(from, to, ct),
+            "etl-batch-summary" or "etlbatchsummary" =>
+                await reportRepository.GetEtlBatchSummaryAsync(from, to, ct),
+            "etl-success-rate" or "etlsuccessrate" =>
+                await reportRepository.GetEtlSuccessRateAsync(from, to, ct),
+            "etl-failed-batches" or "etlfailedbatches" =>
+                await reportRepository.GetEtlFailedBatchesAsync(from, to, ct),
+            "etl-validation-errors" or "etlvalidationerrorsummary" =>
+                await reportRepository.GetEtlValidationErrorSummaryAsync(from, to, ct),
+            "etl-dataset-history" or "etldatasethistory" =>
+                await reportRepository.GetEtlDatasetHistoryAsync(ct),
             _ => throw new ArgumentException(
-                $"Unknown report '{reportName}'. Valid: processing-summary, datasource-health, job-stats, metadata-refresh, data-quality, dataset-health, schema-changes, metadata-sync, quality-trend, import-summary, batch-history, validation-errors, dataset-processing, import-error-trends, failed-imports.")
+                $"Unknown report '{reportName}'. Valid: processing-summary, datasource-health, job-stats, metadata-refresh, data-quality, dataset-health, schema-changes, metadata-sync, quality-trend, import-summary, batch-history, validation-errors, dataset-processing, import-error-trends, failed-imports, etl-batch-summary, etl-success-rate, etl-failed-batches, etl-validation-errors, etl-dataset-history.")
         };
     }
 
@@ -79,6 +89,11 @@ public sealed class ReportService(
         IEnumerable<Core.DTOs.ValidationErrorReportRow> rows => exportService.ExportToCsv(rows),
         IEnumerable<Core.DTOs.DatasetProcessingStatisticsRow> rows => exportService.ExportToCsv(rows),
         IEnumerable<Core.DTOs.ImportErrorTrendRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.EtlBatchSummaryRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.EtlSuccessRateRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.EtlFailedBatchRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.EtlValidationErrorSummaryRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.EtlDatasetHistoryRow> rows => exportService.ExportToCsv(rows),
         _ => exportService.ExportToCsv(Array.Empty<object>())
     };
 
@@ -98,6 +113,11 @@ public sealed class ReportService(
         IEnumerable<Core.DTOs.ValidationErrorReportRow> rows => exportService.ExportToExcel(rows, sheet),
         IEnumerable<Core.DTOs.DatasetProcessingStatisticsRow> rows => exportService.ExportToExcel(rows, sheet),
         IEnumerable<Core.DTOs.ImportErrorTrendRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.EtlBatchSummaryRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.EtlSuccessRateRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.EtlFailedBatchRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.EtlValidationErrorSummaryRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.EtlDatasetHistoryRow> rows => exportService.ExportToExcel(rows, sheet),
         _ => exportService.ExportToExcel(Array.Empty<object>(), sheet)
     };
 

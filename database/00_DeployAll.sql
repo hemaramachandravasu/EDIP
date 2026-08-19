@@ -18,6 +18,10 @@
 :r .\16_Procs_Ingestion.sql
 :r .\17_Views_Ingestion.sql
 :r .\18_Seed_Ingestion.sql
+:r .\20_Schema_Etl.sql
+:r .\21_Procs_Etl.sql
+:r .\22_Views_Etl.sql
+:r .\23_Seed_Etl.sql
 
-PRINT 'EDIP core + quality + ingestion deployment complete. Run 09/14/19 Agent scripts after publishing Edip.Worker.';
+PRINT 'EDIP core + quality + ingestion + ETL deployment complete. Run 09/14/19/24 Agent scripts after publishing Edip.Worker.';
 GO

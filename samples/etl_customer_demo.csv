@@ -1,0 +1,9 @@
+CustomerCode,CustomerName,CountryCode,Email,CreditLimit,Status,CreatedDate
+  etl-001  ,  Acme Transformed  ,usa,  OPS@ACME.EXAMPLE  ,"$12,500.00",a,01/15/2024
+etl-002,Globex,GB,Info@Globex.example,25000,Active,2024-02-20
+,Missing Code,US,a@b.com,10,Active,2024-01-01
+etl-004,Bad Country,ZZ,zz@example.com,10,Active,2024-01-01
+etl-005,Bad Email,DE,not-an-email,-25,Active,2024-01-01
+etl-001,Duplicate Key,US,dup@acme.example,1,Active,2024-01-15
+etl-007,Bad Date,CA,date@example.com,200,Active,not-a-date
+etl-008,Good Prospect,IN,p@example.com,300,P,20240601

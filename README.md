@@ -134,6 +134,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [Automation Strategy](docs/09-Automation-Strategy.md)
 - [Future Enhancement Recommendations](docs/10-Future-Enhancement-Recommendations.md)
 - [Data Ingestion Pipeline](docs/11-Data-Ingestion-Pipeline.md)
+- [ETL Pipeline](docs/12-ETL-Pipeline.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -168,6 +169,24 @@ GET  /api/reports/failed-imports
 Deploy SQL scripts `15`–`18` (included in `00_DeployAll.sql` / `Deploy-Edip.ps1`), then optionally `19_SqlAgentJobs_Ingestion.sql`.  
 See [Data Ingestion Pipeline](docs/11-Data-Ingestion-Pipeline.md) and [test scenarios](samples/INGESTION_TEST_SCENARIOS.md).
 
+## ETL module (transform / validate / load)
+
+```http
+POST /api/etl/batches
+POST /api/etl/batches/{batchId}/run
+POST /api/etl/batches/{batchId}/retry
+GET  /api/etl/batches/{batchId}/errors
+POST /api/etl/generate-test-batch?rowCount=1000
+GET  /api/reports/etl-batch-summary/export?format=xlsx
+GET  /api/reports/etl-success-rate
+GET  /api/reports/etl-failed-batches
+GET  /api/reports/etl-validation-errors
+GET  /api/reports/etl-dataset-history
+```
+
+Deploy SQL scripts `20`–`23`, then optionally `24_SqlAgentJobs_Etl.sql`.  
+See [ETL Pipeline](docs/12-ETL-Pipeline.md) and [ETL test scenarios](samples/ETL_TEST_SCENARIOS.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -178,3 +197,4 @@ See [Data Ingestion Pipeline](docs/11-Data-Ingestion-Pipeline.md) and [test scen
 7. Data profiling, quality scoring, metadata sync with schema-change history
 8. SQL Agent automation for profiling / sync / archive jobs
 9. Staging ingestion, validation, curated load, error history, import monitoring & scheduled processing
+10. Configurable ETL transforms, rule-based validation, transactional load, duplicate strategies, bounded retry

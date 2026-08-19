@@ -14,6 +14,7 @@ public sealed class ProcessingJobService(
     IQualityAssessmentService qualityAssessmentService,
     IMetadataSyncService metadataSyncService,
     IIngestionService ingestionService,
+    IEtlService etlService,
     ILogger<ProcessingJobService> logger) : IProcessingJobService
 {
     public async Task<IReadOnlyList<ProcessingJobDto>> GetAllAsync(CancellationToken ct = default)
@@ -310,6 +311,27 @@ public sealed class ProcessingJobService(
             case ProcessingJobType.ArchiveImportHistory:
                 await ingestionService.ArchiveImportHistoryAsync(90, ct);
                 await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived import history older than 90 days.", ct);
+                break;
+
+            case ProcessingJobType.EtlProcessPending:
+                var etlBatches = await etlService.ProcessPendingAsync(25, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info",
+                    $"ETL processed {etlBatches} pending batch(es).", ct);
+                break;
+
+            case ProcessingJobType.EtlArchiveErrors:
+                await etlService.ArchiveErrorsAsync(90, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived ETL errors older than 90 days.", ct);
+                break;
+
+            case ProcessingJobType.EtlQualitySnapshot:
+                await etlService.GenerateQualitySnapshotAsync(ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info", "Wrote ETL quality snapshots.", ct);
+                break;
+
+            case ProcessingJobType.EtlBatchCleanup:
+                await etlService.CleanupBatchesAsync(90, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info", "Cleaned completed ETL batches older than 90 days.", ct);
                 break;
 
             default:

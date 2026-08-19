@@ -391,4 +391,154 @@ public sealed class ReportRepository(ISqlConnectionFactory connectionFactory) : 
         DurationSeconds = reader.GetNullableDouble("DurationSeconds"),
         LastErrorMessage = reader.GetNullableString("LastErrorMessage")
     };
+
+    public async Task<IReadOnlyList<EtlBatchSummaryRow>> GetEtlBatchSummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<EtlBatchSummaryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_EtlBatchSummary @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new EtlBatchSummaryRow
+            {
+                RunId = reader.GetGuid("RunId"),
+                BatchId = reader.GetGuid("BatchId"),
+                ImportId = reader.GetGuid("ImportId"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                TriggerType = reader.GetString("TriggerType"),
+                Status = reader.GetString("Status"),
+                AttemptNumber = reader.GetInt32("AttemptNumber"),
+                StartedUtc = reader.GetDateTime("StartedUtc"),
+                CompletedUtc = reader.GetNullableDateTime("CompletedUtc"),
+                DurationMs = reader.GetNullableInt32("DurationMs"),
+                TotalRecords = reader.GetInt32("TotalRecords"),
+                TransformedRecords = reader.GetInt32("TransformedRecords"),
+                ValidRecords = reader.GetInt32("ValidRecords"),
+                InvalidRecords = reader.GetInt32("InvalidRecords"),
+                DuplicateRecords = reader.GetInt32("DuplicateRecords"),
+                InsertedRecords = reader.GetInt32("InsertedRecords"),
+                UpdatedRecords = reader.GetInt32("UpdatedRecords"),
+                SkippedRecords = reader.GetInt32("SkippedRecords"),
+                ProcessingErrors = reader.GetInt32("ProcessingErrors"),
+                ValidRatePct = reader.IsDBNull(reader.GetOrdinal("ValidRatePct")) ? null : reader.GetDecimal("ValidRatePct")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<EtlSuccessRateRow>> GetEtlSuccessRateAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<EtlSuccessRateRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_EtlSuccessRate @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new EtlSuccessRateRow
+            {
+                DayUtc = reader.GetDateTime("DayUtc"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                RunCount = reader.GetInt32("RunCount"),
+                SuccessfulRuns = reader.GetInt32("SuccessfulRuns"),
+                FailedRuns = reader.GetInt32("FailedRuns"),
+                SuccessRatePct = reader.GetDecimal("SuccessRatePct"),
+                AvgDurationMs = reader.GetNullableInt32("AvgDurationMs"),
+                TotalRecords = reader.GetInt32("TotalRecords"),
+                ValidRecords = reader.GetInt32("ValidRecords"),
+                InvalidRecords = reader.GetInt32("InvalidRecords")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<EtlFailedBatchRow>> GetEtlFailedBatchesAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<EtlFailedBatchRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_EtlFailedBatches @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new EtlFailedBatchRow
+            {
+                BatchId = reader.GetGuid("BatchId"),
+                ImportId = reader.GetGuid("ImportId"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                SourceFile = reader.GetNullableString("SourceFile"),
+                LoadMode = reader.GetString("LoadMode"),
+                DuplicateStrategy = reader.GetString("DuplicateStrategy"),
+                Status = reader.GetString("Status"),
+                AttemptCount = reader.GetInt32("AttemptCount"),
+                MaxRetries = reader.GetInt32("MaxRetries"),
+                TotalRecords = reader.GetInt32("TotalRecords"),
+                RejectedRecords = reader.GetInt32("RejectedRecords"),
+                ErrorCount = reader.GetInt32("ErrorCount"),
+                ImportUtc = reader.GetDateTime("ImportUtc"),
+                CompletedUtc = reader.GetNullableDateTime("CompletedUtc"),
+                DurationMs = reader.GetNullableInt32("DurationMs"),
+                LastErrorMessage = reader.GetNullableString("LastErrorMessage")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<EtlValidationErrorSummaryRow>> GetEtlValidationErrorSummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<EtlValidationErrorSummaryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_EtlValidationErrorSummary @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new EtlValidationErrorSummaryRow
+            {
+                DayUtc = reader.GetDateTime("DayUtc"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                Phase = reader.GetString("Phase"),
+                ErrorCode = reader.GetString("ErrorCode"),
+                ErrorCount = reader.GetInt32("ErrorCount")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<EtlDatasetHistoryRow>> GetEtlDatasetHistoryAsync(CancellationToken ct = default)
+    {
+        var list = new List<EtlDatasetHistoryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_EtlDatasetHistory;", conn);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new EtlDatasetHistoryRow
+            {
+                DatasetId = reader.GetGuid("DatasetId"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                DisplayName = reader.GetString("DisplayName"),
+                RunCount = reader.GetInt32("RunCount"),
+                TotalRecords = reader.GetInt32("TotalRecords"),
+                ValidRecords = reader.GetInt32("ValidRecords"),
+                InvalidRecords = reader.GetInt32("InvalidRecords"),
+                TransformedRecords = reader.GetInt32("TransformedRecords"),
+                DuplicateRecords = reader.GetInt32("DuplicateRecords"),
+                AvgDurationMs = reader.GetNullableInt32("AvgDurationMs"),
+                LastRunUtc = reader.GetNullableDateTime("LastRunUtc")
+            });
+        }
+        return list;
+    }
 }

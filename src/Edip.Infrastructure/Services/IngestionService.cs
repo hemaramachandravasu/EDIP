@@ -31,7 +31,13 @@ public sealed class IngestionService(IIngestionRepository repository) : IIngesti
             ?? throw new KeyNotFoundException($"Dataset '{request.DatasetCode}' was not found.");
 
         var batchId = await repository.CreateBatchAsync(
-            request.DatasetCode, request.DataSourceId, request.SourceInfo, ct);
+            request.DatasetCode,
+            request.DataSourceId,
+            request.SourceInfo,
+            ct,
+            request.SourceFile,
+            request.LoadMode,
+            request.DuplicateStrategy);
 
         if (request.Records.Count > 0)
         {
@@ -112,6 +118,10 @@ public sealed class IngestionService(IIngestionRepository repository) : IIngesti
         DatasetName = b.DatasetName,
         DataSourceId = b.DataSourceId,
         SourceInfo = b.SourceInfo,
+        ImportId = b.ImportId,
+        SourceFile = b.SourceFile,
+        LoadMode = b.LoadMode,
+        DuplicateStrategy = b.DuplicateStrategy,
         ImportUtc = b.ImportUtc,
         Status = b.Status,
         TotalRecords = b.TotalRecords,
@@ -120,8 +130,11 @@ public sealed class IngestionService(IIngestionRepository repository) : IIngesti
         ProcessedRecords = b.ProcessedRecords,
         InsertedRecords = b.InsertedRecords,
         UpdatedRecords = b.UpdatedRecords,
+        TransformedRecords = b.TransformedRecords,
+        DuplicateRecords = b.DuplicateRecords,
         ErrorCount = b.ErrorCount,
         AttemptCount = b.AttemptCount,
+        MaxRetries = b.MaxRetries,
         StartedUtc = b.StartedUtc,
         CompletedUtc = b.CompletedUtc,
         DurationSeconds = b.DurationSeconds,

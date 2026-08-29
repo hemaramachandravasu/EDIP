@@ -39,5 +39,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'etl')
     EXEC(N'CREATE SCHEMA etl AUTHORIZATION dbo;');
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'profile')
+    EXEC(N'CREATE SCHEMA profile AUTHORIZATION dbo;');
+GO
+
 PRINT 'EDIP database and schemas ready.';
 GO

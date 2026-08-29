@@ -541,4 +541,177 @@ public sealed class ReportRepository(ISqlConnectionFactory connectionFactory) : 
         }
         return list;
     }
+
+    public async Task<IReadOnlyList<DatasetQualitySummaryRow>> GetDatasetQualitySummaryAsync(CancellationToken ct = default)
+    {
+        var list = new List<DatasetQualitySummaryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_DatasetQualitySummary;", conn);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+            list.Add(MapDatasetQuality(reader));
+        return list;
+    }
+
+    public async Task<IReadOnlyList<DatasetQualitySummaryRow>> GetLowestQualityDatasetsAsync(int take = 20, CancellationToken ct = default)
+    {
+        var list = new List<DatasetQualitySummaryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_LowestQualityDatasets @Take;", conn);
+        cmd.Parameters.AddWithValue("@Take", take);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+            list.Add(MapDatasetQuality(reader));
+        return list;
+    }
+
+    public async Task<IReadOnlyList<TopQualityIssueRow>> GetTopDataQualityIssuesAsync(int take = 50, CancellationToken ct = default)
+    {
+        var list = new List<TopQualityIssueRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_TopDataQualityIssues @Take;", conn);
+        cmd.Parameters.AddWithValue("@Take", take);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new TopQualityIssueRow
+            {
+                DatasetCode = reader.GetString("DatasetCode"),
+                IssueType = reader.GetString("IssueType"),
+                ColumnName = reader.GetNullableString("ColumnName"),
+                ErrorCode = reader.GetNullableString("ErrorCode"),
+                AffectedCount = reader.GetInt64("AffectedCount"),
+                Severity = reader.GetString("Severity"),
+                OccurrenceCount = reader.GetInt32("OccurrenceCount")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<DatasetQualityTrendRow>> GetDatasetQualityTrendAsync(
+        string datasetCode, DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<DatasetQualityTrendRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_QualityTrendReport @DatasetCode, @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@DatasetCode", datasetCode);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+            list.Add(DatasetProfileRepository.MapTrend(reader));
+        return list;
+    }
+
+    public async Task<IReadOnlyList<FailedThresholdReportRow>> GetFailedQualityThresholdsAsync(
+        DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<FailedThresholdReportRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_FailedQualityThresholds @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new FailedThresholdReportRow
+            {
+                ProfileRunId = reader.GetGuid("ProfileRunId"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                MetricCode = reader.GetString("MetricCode"),
+                ActualValue = reader.GetDecimal("ActualValue"),
+                OperatorCode = reader.GetString("OperatorCode"),
+                ThresholdValue = reader.GetDecimal("ThresholdValue"),
+                StartedUtc = reader.GetDateTime("StartedUtc"),
+                OverallScore = reader.GetDecimal("OverallScore")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<DatasetQualitySummaryRow>> GetDatasetQualityComparisonAsync(CancellationToken ct = default)
+    {
+        var list = new List<DatasetQualitySummaryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_DatasetQualityComparison;", conn);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new DatasetQualitySummaryRow
+            {
+                DatasetCode = reader.GetString("DatasetCode"),
+                DisplayName = reader.GetString("DisplayName"),
+                LatestOverallScore = reader.GetNullableDecimal("LatestOverallScore"),
+                Grade = reader.GetNullableString("Grade"),
+                CompletenessPct = reader.GetNullableDecimal("CompletenessPct"),
+                ValidityPct = reader.GetNullableDecimal("ValidityPct"),
+                UniquenessPct = reader.GetNullableDecimal("UniquenessPct"),
+                ConsistencyPct = reader.GetNullableDecimal("ConsistencyPct"),
+                DuplicatePct = reader.GetNullableDecimal("DuplicatePct"),
+                TotalRecords = reader.GetNullableInt64("TotalRecords"),
+                LatestThresholdResult = reader.GetNullableString("LatestThresholdResult"),
+                LastProfiledUtc = reader.GetNullableDateTime("LastProfiledUtc")
+            });
+        }
+        return list;
+    }
+
+    public async Task<IReadOnlyList<ImportQualitySummaryRow>> GetImportQualitySummaryAsync(
+        DateTime fromUtc, DateTime toUtc, CancellationToken ct = default)
+    {
+        var list = new List<ImportQualitySummaryRow>();
+        await using var conn = connectionFactory.CreateConnection();
+        await conn.OpenAsync(ct);
+        await using var cmd = new SqlCommand("EXEC rpt.usp_ImportQualitySummary @FromUtc, @ToUtc;", conn);
+        cmd.Parameters.AddWithValue("@FromUtc", fromUtc);
+        cmd.Parameters.AddWithValue("@ToUtc", toUtc);
+        await using var reader = await cmd.ExecuteReaderAsync(ct);
+        while (await reader.ReadAsync(ct))
+        {
+            list.Add(new ImportQualitySummaryRow
+            {
+                BatchId = reader.GetGuid("BatchId"),
+                ImportId = reader.GetGuid("ImportId"),
+                DatasetCode = reader.GetString("DatasetCode"),
+                ImportStatus = reader.GetString("ImportStatus"),
+                TotalRecords = reader.GetInt32("TotalRecords"),
+                ValidRecords = reader.GetInt32("ValidRecords"),
+                RejectedRecords = reader.GetInt32("RejectedRecords"),
+                ErrorCount = reader.GetInt32("ErrorCount"),
+                ProfileRunId = reader.IsDBNull(reader.GetOrdinal("ProfileRunId")) ? null : reader.GetGuid("ProfileRunId"),
+                OverallScore = reader.GetNullableDecimal("OverallScore"),
+                CompletenessPct = reader.GetNullableDecimal("CompletenessPct"),
+                ValidityPct = reader.GetNullableDecimal("ValidityPct"),
+                ThresholdResult = reader.GetNullableString("ThresholdResult"),
+                ImportUtc = reader.GetDateTime("ImportUtc")
+            });
+        }
+        return list;
+    }
+
+    private static DatasetQualitySummaryRow MapDatasetQuality(SqlDataReader reader) => new()
+    {
+        DatasetId = reader.GetGuid("DatasetId"),
+        DatasetCode = reader.GetString("DatasetCode"),
+        DisplayName = reader.GetString("DisplayName"),
+        LatestProfileRunId = reader.IsDBNull(reader.GetOrdinal("LatestProfileRunId")) ? null : reader.GetGuid("LatestProfileRunId"),
+        LatestOverallScore = reader.GetNullableDecimal("LatestOverallScore"),
+        LatestThresholdResult = reader.GetNullableString("LatestThresholdResult"),
+        Grade = reader.GetNullableString("Grade"),
+        CompletenessPct = reader.GetNullableDecimal("CompletenessPct"),
+        ValidityPct = reader.GetNullableDecimal("ValidityPct"),
+        UniquenessPct = reader.GetNullableDecimal("UniquenessPct"),
+        ConsistencyPct = reader.GetNullableDecimal("ConsistencyPct"),
+        DuplicatePct = reader.GetNullableDecimal("DuplicatePct"),
+        TotalRecords = reader.GetNullableInt64("TotalRecords"),
+        IssueCount = reader.GetNullableInt32("IssueCount"),
+        LastProfiledUtc = reader.GetNullableDateTime("LastProfiledUtc"),
+        DurationMs = reader.GetNullableInt32("DurationMs")
+    };
 }

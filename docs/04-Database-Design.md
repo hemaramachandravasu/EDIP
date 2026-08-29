@@ -3,7 +3,7 @@
 ## Database
 - Name: `EDIP`
 - Engine: Microsoft SQL Server
-- Deployment scripts: `database/01_*.sql` … `database/24_*.sql` (orchestrated by `00_DeployAll.sql`)
+- Deployment scripts: `database/01_*.sql` … `database/29_*.sql` (orchestrated by `00_DeployAll.sql`)
 
 ## Schema map
 
@@ -56,6 +56,18 @@
 | EtlError / EtlErrorArchive | Dedicated error structure + archive |
 | QualitySnapshot | Scheduled dataset-level ETL quality |
 
+### Dataset quality profiling (`profile`)
+| Table | Description |
+|-------|-------------|
+| DatasetProfile | Dataset catalog + latest run pointer |
+| ProfileRun | Unique profile execution + dataset metrics/score |
+| ColumnProfile | Column completeness, uniqueness, stats |
+| QualityMetric | Named metric values |
+| QualityIssue | Missing/duplicate/invalid/threshold issues |
+| QualityThreshold | Configurable pass/fail rules |
+| ScoreWeight | Score dimension weights |
+| ThresholdResult | Per-run threshold evaluation |
+
 ### Reporting (`rpt`)
 Views and procedures:
 - `vw_ProcessingSuccessFailureSummary` / `usp_ProcessingSuccessFailureSummary`
@@ -64,6 +76,7 @@ Views and procedures:
 - `vw_MetadataRefreshStatus` / `usp_MetadataRefreshStatus`
 - Import monitoring: `usp_ImportSummary`, `usp_BatchProcessingHistory`, `usp_ValidationErrors`, `usp_DatasetProcessingStatistics`, `usp_ImportErrorTrends`, `usp_FailedImports`
 - ETL monitoring: `usp_EtlBatchSummary`, `usp_EtlSuccessRate`, `usp_EtlFailedBatches`, `usp_EtlValidationErrorSummary`, `usp_EtlDatasetHistory`
+- Dataset profile monitoring: `usp_DatasetQualitySummary`, `usp_LowestQualityDatasets`, `usp_TopDataQualityIssues`, `usp_QualityTrendReport`, `usp_FailedQualityThresholds`, `usp_DatasetQualityComparison`, `usp_ImportQualitySummary`
 
 ## Indexing highlights
 - Filtered unique index on `reg.DataSource(Name)` where not deleted
@@ -82,4 +95,5 @@ Views and procedures:
 ## Seed data
 `08_SeedData.sql` inserts connector types, a local SQL catalog source, a sample CSV source, and two demo jobs (health check + metadata refresh).  
 `18_Seed_Ingestion.sql` seeds countries, the CUSTOMER dataset, import Agent jobs, and a mixed valid/invalid demo batch.  
-`23_Seed_Etl.sql` seeds transform/validation rules, ETL jobs, and a transformation demo batch.
+`23_Seed_Etl.sql` seeds transform/validation rules, ETL jobs, and a transformation demo batch.  
+`28_Seed_Profile.sql` seeds score weights, thresholds, profile jobs, and a demo profile run.

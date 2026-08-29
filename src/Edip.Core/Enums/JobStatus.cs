@@ -31,5 +31,7 @@ public enum ProcessingJobType
     EtlProcessPending = 10,
     EtlArchiveErrors = 11,
     EtlQualitySnapshot = 12,
-    EtlBatchCleanup = 13
+    EtlBatchCleanup = 13,
+    DatasetQualityProfile = 14,
+    ArchiveProfileHistory = 15
 }

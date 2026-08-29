@@ -49,6 +49,18 @@ internal static class SqlReaderExtensions
 
     public static decimal GetDecimal(this SqlDataReader reader, string name) => reader.GetDecimal(reader.GetOrdinal(name));
 
+    public static decimal? GetNullableDecimal(this SqlDataReader reader, string name)
+    {
+        var ordinal = reader.GetOrdinal(name);
+        return reader.IsDBNull(ordinal) ? null : reader.GetDecimal(ordinal);
+    }
+
+    public static long? GetNullableInt64(this SqlDataReader reader, string name)
+    {
+        var ordinal = reader.GetOrdinal(name);
+        return reader.IsDBNull(ordinal) ? null : reader.GetInt64(ordinal);
+    }
+
     public static void AddNullable(this SqlParameterCollection parameters, string name, object? value)
     {
         parameters.AddWithValue(name, value ?? DBNull.Value);

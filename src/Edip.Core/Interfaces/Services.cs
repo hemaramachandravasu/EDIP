@@ -91,6 +91,19 @@ public interface IMetadataSyncService
     Task ArchiveHistoryAsync(int retainDays = 90, CancellationToken ct = default);
 }
 
+public interface IDatasetProfileService
+{
+    Task<DTOs.ProfileRunDto> ProfileAsync(string datasetCode, string profileScope = "Processed", Guid? importId = null, Guid? batchId = null, CancellationToken ct = default);
+    Task<DTOs.ProfileRunDto?> GetRunAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<DTOs.ProfileRunDto?> GetLatestScoreAsync(string datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetColumnProfileDto>> GetColumnProfilesAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualityIssueDto>> GetIssuesAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetThresholdResultDto>> GetThresholdResultsAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualityTrendRow>> GetTrendAsync(string datasetCode, DateTime? fromUtc, DateTime? toUtc, CancellationToken ct = default);
+    Task<int> ProfileDueDatasetsAsync(int maxDatasets = 10, CancellationToken ct = default);
+    Task ArchiveHistoryAsync(int retainDays = 180, CancellationToken ct = default);
+}
+
 public interface IIngestionService
 {
     Task<IReadOnlyList<DTOs.IngestDatasetDto>> GetDatasetsAsync(CancellationToken ct = default);

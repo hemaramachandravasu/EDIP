@@ -15,6 +15,7 @@ public sealed class ProcessingJobService(
     IMetadataSyncService metadataSyncService,
     IIngestionService ingestionService,
     IEtlService etlService,
+    IDatasetProfileService datasetProfileService,
     ILogger<ProcessingJobService> logger) : IProcessingJobService
 {
     public async Task<IReadOnlyList<ProcessingJobDto>> GetAllAsync(CancellationToken ct = default)
@@ -332,6 +333,17 @@ public sealed class ProcessingJobService(
             case ProcessingJobType.EtlBatchCleanup:
                 await etlService.CleanupBatchesAsync(90, ct);
                 await jobRepository.AddExecutionLogAsync(executionId, "Info", "Cleaned completed ETL batches older than 90 days.", ct);
+                break;
+
+            case ProcessingJobType.DatasetQualityProfile:
+                var profiled = await datasetProfileService.ProfileDueDatasetsAsync(25, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info",
+                    $"Profiled {profiled} dataset(s).", ct);
+                break;
+
+            case ProcessingJobType.ArchiveProfileHistory:
+                await datasetProfileService.ArchiveHistoryAsync(180, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived profile history older than 180 days.", ct);
                 break;
 
             default:

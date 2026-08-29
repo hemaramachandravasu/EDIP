@@ -135,6 +135,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [Future Enhancement Recommendations](docs/10-Future-Enhancement-Recommendations.md)
 - [Data Ingestion Pipeline](docs/11-Data-Ingestion-Pipeline.md)
 - [ETL Pipeline](docs/12-ETL-Pipeline.md)
+- [Dataset Quality Profiling](docs/13-Dataset-Quality-Profiling.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -187,6 +188,26 @@ GET  /api/reports/etl-dataset-history
 Deploy SQL scripts `20`–`23`, then optionally `24_SqlAgentJobs_Etl.sql`.  
 See [ETL Pipeline](docs/12-ETL-Pipeline.md) and [ETL test scenarios](samples/ETL_TEST_SCENARIOS.md).
 
+## Dataset quality profiling module
+
+```http
+POST /api/dataset-profile/CUSTOMER?scope=Processed
+GET  /api/dataset-profile/CUSTOMER/score
+GET  /api/dataset-profile/runs/{profileRunId}/columns
+GET  /api/dataset-profile/runs/{profileRunId}/issues
+GET  /api/dataset-profile/runs/{profileRunId}/thresholds
+GET  /api/dataset-profile/CUSTOMER/trend
+GET  /api/reports/dataset-quality-summary
+GET  /api/reports/lowest-quality-datasets
+GET  /api/reports/top-quality-issues
+GET  /api/reports/failed-quality-thresholds/export?format=xlsx
+GET  /api/reports/dataset-quality-comparison
+GET  /api/reports/import-quality-summary
+```
+
+Deploy SQL scripts `25`–`28`, then optionally `29_SqlAgentJobs_Profile.sql`.  
+See [Dataset Quality Profiling](docs/13-Dataset-Quality-Profiling.md) and [profile test scenarios](samples/PROFILE_TEST_SCENARIOS.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -198,3 +219,4 @@ See [ETL Pipeline](docs/12-ETL-Pipeline.md) and [ETL test scenarios](samples/ETL
 8. SQL Agent automation for profiling / sync / archive jobs
 9. Staging ingestion, validation, curated load, error history, import monitoring & scheduled processing
 10. Configurable ETL transforms, rule-based validation, transactional load, duplicate strategies, bounded retry
+11. Dataset quality profiling (completeness, uniqueness, validity, stats, scores, thresholds, trends)

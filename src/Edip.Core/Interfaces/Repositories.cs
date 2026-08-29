@@ -70,6 +70,13 @@ public interface IReportRepository
     Task<IReadOnlyList<DTOs.EtlFailedBatchRow>> GetEtlFailedBatchesAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.EtlValidationErrorSummaryRow>> GetEtlValidationErrorSummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.EtlDatasetHistoryRow>> GetEtlDatasetHistoryAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualitySummaryRow>> GetDatasetQualitySummaryAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualitySummaryRow>> GetLowestQualityDatasetsAsync(int take = 20, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.TopQualityIssueRow>> GetTopDataQualityIssuesAsync(int take = 50, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualityTrendRow>> GetDatasetQualityTrendAsync(string datasetCode, DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.FailedThresholdReportRow>> GetFailedQualityThresholdsAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualitySummaryRow>> GetDatasetQualityComparisonAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ImportQualitySummaryRow>> GetImportQualitySummaryAsync(DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
 }
 
 public interface IQualityRepository
@@ -119,4 +126,17 @@ public interface IEtlRepository
     Task CleanupBatchesAsync(int retainDays, CancellationToken ct = default);
     Task GenerateQualitySnapshotAsync(CancellationToken ct = default);
     Task<Guid> GenerateTestBatchAsync(int rowCount, CancellationToken ct = default);
+}
+
+public interface IDatasetProfileRepository
+{
+    Task<DTOs.ProfileRunDto> ProfileAsync(string datasetCode, string profileScope, string triggerType, Guid? importId, Guid? batchId, CancellationToken ct = default);
+    Task<DTOs.ProfileRunDto?> GetRunAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<DTOs.ProfileRunDto?> GetLatestScoreAsync(string datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetColumnProfileDto>> GetColumnProfilesAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualityIssueDto>> GetIssuesAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetThresholdResultDto>> GetThresholdResultsAsync(Guid profileRunId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetQualityTrendRow>> GetTrendAsync(string datasetCode, DateTime fromUtc, DateTime toUtc, CancellationToken ct = default);
+    Task<int> ProfileDueDatasetsAsync(int maxDatasets, CancellationToken ct = default);
+    Task ArchiveHistoryAsync(int retainDays, CancellationToken ct = default);
 }

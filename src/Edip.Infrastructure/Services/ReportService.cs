@@ -51,8 +51,22 @@ public sealed class ReportService(
                 await reportRepository.GetEtlValidationErrorSummaryAsync(from, to, ct),
             "etl-dataset-history" or "etldatasethistory" =>
                 await reportRepository.GetEtlDatasetHistoryAsync(ct),
+            "dataset-quality-summary" or "datasetqualitysummary" =>
+                await reportRepository.GetDatasetQualitySummaryAsync(ct),
+            "lowest-quality-datasets" or "lowestqualitydatasets" =>
+                await reportRepository.GetLowestQualityDatasetsAsync(20, ct),
+            "top-quality-issues" or "topdataqualityissues" =>
+                await reportRepository.GetTopDataQualityIssuesAsync(50, ct),
+            "dataset-quality-trend" or "datasetqualitytrend" =>
+                await reportRepository.GetDatasetQualityTrendAsync("CUSTOMER", from, to, ct),
+            "failed-quality-thresholds" or "failedqualitythresholds" =>
+                await reportRepository.GetFailedQualityThresholdsAsync(from, to, ct),
+            "dataset-quality-comparison" or "datasetqualitycomparison" =>
+                await reportRepository.GetDatasetQualityComparisonAsync(ct),
+            "import-quality-summary" or "importqualitysummary" =>
+                await reportRepository.GetImportQualitySummaryAsync(from, to, ct),
             _ => throw new ArgumentException(
-                $"Unknown report '{reportName}'. Valid: processing-summary, datasource-health, job-stats, metadata-refresh, data-quality, dataset-health, schema-changes, metadata-sync, quality-trend, import-summary, batch-history, validation-errors, dataset-processing, import-error-trends, failed-imports, etl-batch-summary, etl-success-rate, etl-failed-batches, etl-validation-errors, etl-dataset-history.")
+                $"Unknown report '{reportName}'. Valid: processing-summary, datasource-health, job-stats, metadata-refresh, data-quality, dataset-health, schema-changes, metadata-sync, quality-trend, import-summary, batch-history, validation-errors, dataset-processing, import-error-trends, failed-imports, etl-batch-summary, etl-success-rate, etl-failed-batches, etl-validation-errors, etl-dataset-history, dataset-quality-summary, lowest-quality-datasets, top-quality-issues, dataset-quality-trend, failed-quality-thresholds, dataset-quality-comparison, import-quality-summary.")
         };
     }
 
@@ -94,6 +108,11 @@ public sealed class ReportService(
         IEnumerable<Core.DTOs.EtlFailedBatchRow> rows => exportService.ExportToCsv(rows),
         IEnumerable<Core.DTOs.EtlValidationErrorSummaryRow> rows => exportService.ExportToCsv(rows),
         IEnumerable<Core.DTOs.EtlDatasetHistoryRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.DatasetQualitySummaryRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.TopQualityIssueRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.DatasetQualityTrendRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.FailedThresholdReportRow> rows => exportService.ExportToCsv(rows),
+        IEnumerable<Core.DTOs.ImportQualitySummaryRow> rows => exportService.ExportToCsv(rows),
         _ => exportService.ExportToCsv(Array.Empty<object>())
     };
 
@@ -118,6 +137,11 @@ public sealed class ReportService(
         IEnumerable<Core.DTOs.EtlFailedBatchRow> rows => exportService.ExportToExcel(rows, sheet),
         IEnumerable<Core.DTOs.EtlValidationErrorSummaryRow> rows => exportService.ExportToExcel(rows, sheet),
         IEnumerable<Core.DTOs.EtlDatasetHistoryRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.DatasetQualitySummaryRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.TopQualityIssueRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.DatasetQualityTrendRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.FailedThresholdReportRow> rows => exportService.ExportToExcel(rows, sheet),
+        IEnumerable<Core.DTOs.ImportQualitySummaryRow> rows => exportService.ExportToExcel(rows, sheet),
         _ => exportService.ExportToExcel(Array.Empty<object>(), sheet)
     };
 

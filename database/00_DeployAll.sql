@@ -22,6 +22,10 @@
 :r .\21_Procs_Etl.sql
 :r .\22_Views_Etl.sql
 :r .\23_Seed_Etl.sql
+:r .\25_Schema_Profile.sql
+:r .\26_Procs_Profile.sql
+:r .\27_Views_Profile.sql
+:r .\28_Seed_Profile.sql
 
-PRINT 'EDIP core + quality + ingestion + ETL deployment complete. Run 09/14/19/24 Agent scripts after publishing Edip.Worker.';
+PRINT 'EDIP core + quality + ingestion + ETL + profile deployment complete. Run 09/14/19/24/29 Agent scripts after publishing Edip.Worker.';
 GO

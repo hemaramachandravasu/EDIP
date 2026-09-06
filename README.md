@@ -136,6 +136,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [Data Ingestion Pipeline](docs/11-Data-Ingestion-Pipeline.md)
 - [ETL Pipeline](docs/12-ETL-Pipeline.md)
 - [Dataset Quality Profiling](docs/13-Dataset-Quality-Profiling.md)
+- [SQL Analytics & Reporting Engine](docs/14-SQL-Analytics-Reporting-Engine.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -208,6 +209,37 @@ GET  /api/reports/import-quality-summary
 Deploy SQL scripts `25`–`28`, then optionally `29_SqlAgentJobs_Profile.sql`.  
 See [Dataset Quality Profiling](docs/13-Dataset-Quality-Profiling.md) and [profile test scenarios](samples/PROFILE_TEST_SCENARIOS.md).
 
+## SQL Analytics & Reporting Engine (Task 19)
+
+Reusable SQL analytics layer over datasets / imports / ETL runs / quality
+profiles: aggregated KPIs, historical trends (window functions), dataset
+comparisons, workspace roll-ups, dashboard-ready feeds, and CSV/Excel
+export feeds. Pre-aggregated fact table + period snapshots refreshed by
+SQL Server Agent.
+
+```http
+POST /api/analytics/refresh
+GET  /api/analytics/dashboard/kpi-cards
+GET  /api/analytics/datasets/count-by/{Status|Category|Workspace|Owner}
+GET  /api/analytics/datasets/comparison?datasetCodes=CUSTOMER,ORDER
+GET  /api/analytics/imports/summary
+GET  /api/analytics/imports/volume-by-date?granularity=Week
+GET  /api/analytics/quality/summary
+GET  /api/analytics/quality/trend/CUSTOMER?period=Month
+GET  /api/analytics/quality/profile-comparison/CUSTOMER
+GET  /api/analytics/workspaces
+GET  /api/analytics/time-based?granularity=Month
+GET  /api/analytics/quarterly-trends?quarters=8
+GET  /api/analytics/export/{dataset-inventory|import-detail|quality-detail}?format=xlsx
+```
+
+Deploy SQL scripts `30`–`33` (included in `00_DeployAll.sql` /
+`Deploy-Edip.ps1`), then optionally `34_SqlAgentJobs_Analytics.sql`
+(TSQL subsystem — no Worker needed).  
+See [SQL Analytics & Reporting Engine](docs/14-SQL-Analytics-Reporting-Engine.md),
+[test scenarios](samples/ANALYTICS_TEST_SCENARIOS.md) and
+[sample outputs](samples/ANALYTICS_REPORT_SAMPLES.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -220,3 +252,4 @@ See [Dataset Quality Profiling](docs/13-Dataset-Quality-Profiling.md) and [profi
 9. Staging ingestion, validation, curated load, error history, import monitoring & scheduled processing
 10. Configurable ETL transforms, rule-based validation, transactional load, duplicate strategies, bounded retry
 11. Dataset quality profiling (completeness, uniqueness, validity, stats, scores, thresholds, trends)
+12. SQL analytics & reporting engine (workspace/dataset/import/quality KPIs, window-function trends, dataset comparison, dashboard feeds, pre-aggregated fact + Agent refresh, CSV/Excel export)

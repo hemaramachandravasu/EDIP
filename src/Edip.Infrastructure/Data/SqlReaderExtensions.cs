@@ -23,7 +23,9 @@ internal static class SqlReaderExtensions
         return reader.IsDBNull(ordinal) ? null : reader.GetInt32(ordinal);
     }
 
-    public static long GetInt64(this SqlDataReader reader, string name) => reader.GetInt64(reader.GetOrdinal(name));
+    // Widening conversion so SUM(int) / COUNT(...) columns map cleanly to Int64 DTOs.
+    public static long GetInt64(this SqlDataReader reader, string name)
+        => Convert.ToInt64(reader.GetValue(reader.GetOrdinal(name)));
 
     public static bool GetBoolean(this SqlDataReader reader, string name) => reader.GetBoolean(reader.GetOrdinal(name));
 
@@ -58,7 +60,7 @@ internal static class SqlReaderExtensions
     public static long? GetNullableInt64(this SqlDataReader reader, string name)
     {
         var ordinal = reader.GetOrdinal(name);
-        return reader.IsDBNull(ordinal) ? null : reader.GetInt64(ordinal);
+        return reader.IsDBNull(ordinal) ? null : Convert.ToInt64(reader.GetValue(ordinal));
     }
 
     public static void AddNullable(this SqlParameterCollection parameters, string name, object? value)

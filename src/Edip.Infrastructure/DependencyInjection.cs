@@ -38,6 +38,7 @@ public static class DependencyInjection
         services.AddScoped<IIngestionRepository, IngestionRepository>();
         services.AddScoped<IEtlRepository, EtlRepository>();
         services.AddScoped<IDatasetProfileRepository, DatasetProfileRepository>();
+        services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
 
         services.AddSingleton<FileProbe>();
         services.AddSingleton<IConnectionProbe, SqlServerProbe>();
@@ -58,6 +59,7 @@ public static class DependencyInjection
         services.AddScoped<IIngestionService, IngestionService>();
         services.AddScoped<IEtlService, EtlService>();
         services.AddScoped<IDatasetProfileService, DatasetProfileService>();
+        services.AddScoped<IAnalyticsService, AnalyticsService>();
 
         return services;
     }

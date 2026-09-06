@@ -91,6 +91,43 @@ public interface IMetadataSyncService
     Task ArchiveHistoryAsync(int retainDays = 90, CancellationToken ct = default);
 }
 
+public interface IAnalyticsService
+{
+    Task<DTOs.AnalyticsRefreshResultDto> RefreshAsync(DateTime? fromDate, DateTime? toDate, CancellationToken ct = default);
+
+    Task<DTOs.DatasetCountSummaryDto> GetDatasetCountSummaryAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DimensionCountRow>> GetDatasetCountByDimensionAsync(string dimension, Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.RecentDatasetRow>> GetRecentDatasetsAsync(string mode, int days, int take, Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetActivityRow>> GetDatasetActivityAsync(DateTime? fromUtc, DateTime? toUtc, Guid? workspaceId, string? datasetCode, int take, CancellationToken ct = default);
+
+    Task<DTOs.ImportAnalyticsSummaryDto> GetImportAnalyticsSummaryAsync(DateTime? fromUtc, DateTime? toUtc, Guid? workspaceId, string? datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ImportVolumeRow>> GetImportVolumeByDateAsync(DateTime? fromUtc, DateTime? toUtc, string granularity, Guid? workspaceId, string? datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ImportVolumeByDatasetRow>> GetImportVolumeByDatasetAsync(DateTime? fromUtc, DateTime? toUtc, Guid? workspaceId, CancellationToken ct = default);
+
+    Task<DTOs.QualityAnalyticsSummaryDto> GetQualityAnalyticsSummaryAsync(Guid? workspaceId, string? datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.QualityByDatasetRow>> GetQualityByDatasetAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.QualityByDatasetRow>> GetLowestQualityScoresAsync(int take, Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.QualityIssueBreakdownRow>> GetQualityIssueBreakdownAsync(DateTime? fromUtc, DateTime? toUtc, Guid? workspaceId, CancellationToken ct = default);
+
+    Task<IReadOnlyList<DTOs.QualityTrendSeriesRow>> GetQualityTrendSeriesAsync(string datasetCode, string periodType, DateTime? fromDate, DateTime? toDate, CancellationToken ct = default);
+    Task<DTOs.QualityProfileComparisonDto?> GetQualityProfileComparisonAsync(string datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.QualityPeriodComparisonRow>> GetQualityPeriodComparisonAsync(string periodType, string? datasetCode, Guid? workspaceId, CancellationToken ct = default);
+
+    Task<IReadOnlyList<DTOs.DatasetComparisonRow>> GetDatasetComparisonAsync(string? datasetCodes, Guid? workspaceId, int windowDays, int pageNumber, int pageSize, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.WorkspaceAnalyticsRow>> GetWorkspaceAnalyticsAsync(Guid? workspaceId, DateTime? fromUtc, DateTime? toUtc, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.TimeBasedActivityRow>> GetTimeBasedActivityAsync(DateTime? fromUtc, DateTime? toUtc, string granularity, Guid? workspaceId, string? datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.QuarterlyTrendRow>> GetQuarterlyTrendsAsync(Guid? workspaceId, int quarters, CancellationToken ct = default);
+
+    Task<DTOs.DashboardKpiCardsDto> GetDashboardKpiCardsAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DashboardTrendPointRow>> GetDashboardTrendChartAsync(string? datasetCode, int days, Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.QualityDistributionRow>> GetDashboardQualityDistributionAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetDistributionRow>> GetDashboardDatasetDistributionAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DashboardImportActivityRow>> GetDashboardImportActivityAsync(int days, Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DashboardTopIssueRow>> GetDashboardTopQualityIssuesAsync(int take, Guid? workspaceId, int days, CancellationToken ct = default);
+
+    Task<(byte[] Content, string ContentType, string FileName)> ExportAsync(string feed, string format, DateTime? fromUtc, DateTime? toUtc, Guid? workspaceId, string? datasetCode, CancellationToken ct = default);
+}
+
 public interface IDatasetProfileService
 {
     Task<DTOs.ProfileRunDto> ProfileAsync(string datasetCode, string profileScope = "Processed", Guid? importId = null, Guid? batchId = null, CancellationToken ct = default);

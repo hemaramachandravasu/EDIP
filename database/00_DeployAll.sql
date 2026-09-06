@@ -26,6 +26,10 @@
 :r .\26_Procs_Profile.sql
 :r .\27_Views_Profile.sql
 :r .\28_Seed_Profile.sql
+:r .\30_Schema_Analytics.sql
+:r .\31_Procs_Analytics.sql
+:r .\32_Views_Analytics.sql
+:r .\33_Seed_Analytics.sql
 
-PRINT 'EDIP core + quality + ingestion + ETL + profile deployment complete. Run 09/14/19/24/29 Agent scripts after publishing Edip.Worker.';
+PRINT 'EDIP core + quality + ingestion + ETL + profile + analytics deployment complete. Run 09/14/19/24/29 Agent scripts after publishing Edip.Worker; 34_SqlAgentJobs_Analytics.sql runs standalone (TSQL subsystem).';
 GO

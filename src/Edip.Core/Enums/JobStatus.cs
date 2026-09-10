@@ -33,5 +33,7 @@ public enum ProcessingJobType
     EtlQualitySnapshot = 12,
     EtlBatchCleanup = 13,
     DatasetQualityProfile = 14,
-    ArchiveProfileHistory = 15
+    ArchiveProfileHistory = 15,
+    SyncPlatformLineage = 16,
+    ArchiveLineageHistory = 17
 }

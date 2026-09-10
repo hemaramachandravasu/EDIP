@@ -188,3 +188,23 @@ public interface IDatasetProfileRepository
     Task<int> ProfileDueDatasetsAsync(int maxDatasets, CancellationToken ct = default);
     Task ArchiveHistoryAsync(int retainDays, CancellationToken ct = default);
 }
+
+public interface ILineageRepository
+{
+    Task<IReadOnlyList<DTOs.LineageNodeDto>> GetUpstreamAsync(Guid? entityId, string? datasetCode, Guid? datasetVersionId, int? versionNumber, Guid? workspaceId, int maxDepth, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageNodeDto>> GetDownstreamAsync(Guid? entityId, string? datasetCode, Guid? datasetVersionId, int? versionNumber, Guid? workspaceId, int maxDepth, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageNodeDto>> ImpactAnalysisAsync(Guid? entityId, string? datasetCode, Guid? datasetVersionId, int? versionNumber, string changeType, Guid? workspaceId, int maxDepth, CancellationToken ct = default);
+    Task<DTOs.VersionLineageResultDto> GetVersionLineageAsync(string datasetCode, int? versionNumber, Guid? datasetVersionId, Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CircularDependencyDto>> DetectCircularAsync(Guid? workspaceId, int maxDepth, CancellationToken ct = default);
+    Task<DTOs.AddRelationshipResultDto> AddRelationshipAsync(DTOs.AddRelationshipRequest request, CancellationToken ct = default);
+    Task<DTOs.LineageSyncResultDto> SyncPlatformAsync(int maxBatches, CancellationToken ct = default);
+    Task ArchiveHistoryAsync(int retainDays, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageEntityDto>> GetEntitiesAsync(Guid? entityId, string? entityCode, string? entityTypeCode, Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageConnectedRow>> GetMostConnectedAsync(Guid? workspaceId, int take, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageDegreeRow>> GetHighestDependenciesAsync(Guid? workspaceId, int take, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageDegreeRow>> GetHighestDependentsAsync(Guid? workspaceId, int take, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageRelationshipCountRow>> GetRelationshipCountsAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageSourceToDatasetRow>> GetSourceToDatasetCountsAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageDatasetToReportRow>> GetDatasetToReportAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.LineageDepthRow>> GetDependencyDepthAsync(Guid? workspaceId, int maxDepth, CancellationToken ct = default);
+}

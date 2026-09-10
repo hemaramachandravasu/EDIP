@@ -3,7 +3,7 @@
 ## Database
 - Name: `EDIP`
 - Engine: Microsoft SQL Server
-- Deployment scripts: `database/01_*.sql` … `database/29_*.sql` (orchestrated by `00_DeployAll.sql`)
+- Deployment scripts: `database/01_*.sql` … `database/38_*.sql` (orchestrated by `00_DeployAll.sql`)
 
 ## Schema map
 
@@ -77,6 +77,16 @@ Views and procedures:
 - Import monitoring: `usp_ImportSummary`, `usp_BatchProcessingHistory`, `usp_ValidationErrors`, `usp_DatasetProcessingStatistics`, `usp_ImportErrorTrends`, `usp_FailedImports`
 - ETL monitoring: `usp_EtlBatchSummary`, `usp_EtlSuccessRate`, `usp_EtlFailedBatches`, `usp_EtlValidationErrorSummary`, `usp_EtlDatasetHistory`
 - Dataset profile monitoring: `usp_DatasetQualitySummary`, `usp_LowestQualityDatasets`, `usp_TopDataQualityIssues`, `usp_QualityTrendReport`, `usp_FailedQualityThresholds`, `usp_DatasetQualityComparison`, `usp_ImportQualitySummary`
+- Lineage analytics: `usp_LineageMostConnected`, `usp_LineageHighestDependencies`, `usp_LineageHighestDependents`, `usp_LineageRelationshipCounts`, `usp_LineageSourceToDatasetCounts`, `usp_LineageDatasetToReport`, `usp_LineageDependencyDepth`
+
+### Lineage (`lineage`)
+| Table | Description |
+|-------|-------------|
+| EntityType | Node type catalog |
+| LineageEntity | Polymorphic graph nodes |
+| DatasetVersion | Append-only dataset versions |
+| LineageRelationship | Directed edges with process/version context |
+| LineageCaptureLog | Sync/capture audit |
 
 ## Indexing highlights
 - Filtered unique index on `reg.DataSource(Name)` where not deleted
@@ -96,4 +106,5 @@ Views and procedures:
 `08_SeedData.sql` inserts connector types, a local SQL catalog source, a sample CSV source, and two demo jobs (health check + metadata refresh).  
 `18_Seed_Ingestion.sql` seeds countries, the CUSTOMER dataset, import Agent jobs, and a mixed valid/invalid demo batch.  
 `23_Seed_Etl.sql` seeds transform/validation rules, ETL jobs, and a transformation demo batch.  
-`28_Seed_Profile.sql` seeds score weights, thresholds, profile jobs, and a demo profile run.
+`28_Seed_Profile.sql` seeds score weights, thresholds, profile jobs, and a demo profile run.  
+`38_Seed_Lineage.sql` syncs platform lineage, seeds a multi-hop demo graph, and lineage jobs.

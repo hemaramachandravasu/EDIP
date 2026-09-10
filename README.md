@@ -137,6 +137,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [ETL Pipeline](docs/12-ETL-Pipeline.md)
 - [Dataset Quality Profiling](docs/13-Dataset-Quality-Profiling.md)
 - [SQL Analytics & Reporting Engine](docs/14-SQL-Analytics-Reporting-Engine.md)
+- [SQL Lineage Engine](docs/15-SQL-Lineage-Engine.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -240,6 +241,30 @@ See [SQL Analytics & Reporting Engine](docs/14-SQL-Analytics-Reporting-Engine.md
 [test scenarios](samples/ANALYTICS_TEST_SCENARIOS.md) and
 [sample outputs](samples/ANALYTICS_REPORT_SAMPLES.md).
 
+## SQL Lineage, Dependency & Impact Analysis Engine
+
+Graph store for upstream/downstream lineage, impact analysis, dataset
+versions, circular-dependency guards, workspace filtering, and dashboard
+feeds — backed by recursive CTEs and ADO.NET.
+
+```http
+GET  /api/lineage/upstream?datasetCode=DEMO_DATASET_C
+GET  /api/lineage/downstream?datasetCode=DEMO_DATASET_A
+GET  /api/lineage/impact?datasetCode=DEMO_DATASET_A
+GET  /api/lineage/versions/CUSTOMER
+GET  /api/lineage/circular
+POST /api/lineage/sync
+POST /api/lineage/relationships
+GET  /api/lineage/analytics/most-connected
+GET  /api/lineage/analytics/highest-dependents
+GET  /api/lineage/analytics/dataset-to-report
+```
+
+Deploy SQL scripts `35`–`38` (included in `00_DeployAll.sql` /
+`Deploy-Edip.ps1`), then optionally `39_SqlAgentJobs_Lineage.sql`.  
+See [SQL Lineage Engine](docs/15-SQL-Lineage-Engine.md) and
+[lineage test scenarios](samples/LINEAGE_TEST_SCENARIOS.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -253,3 +278,4 @@ See [SQL Analytics & Reporting Engine](docs/14-SQL-Analytics-Reporting-Engine.md
 10. Configurable ETL transforms, rule-based validation, transactional load, duplicate strategies, bounded retry
 11. Dataset quality profiling (completeness, uniqueness, validity, stats, scores, thresholds, trends)
 12. SQL analytics & reporting engine (workspace/dataset/import/quality KPIs, window-function trends, dataset comparison, dashboard feeds, pre-aggregated fact + Agent refresh, CSV/Excel export)
+13. SQL lineage / dependency / impact analysis (entity graph, versions, recursive upstream/downstream, circular guards, workspace filters, dashboard analytics)

@@ -16,6 +16,7 @@ public sealed class ProcessingJobService(
     IIngestionService ingestionService,
     IEtlService etlService,
     IDatasetProfileService datasetProfileService,
+    ILineageService lineageService,
     ILogger<ProcessingJobService> logger) : IProcessingJobService
 {
     public async Task<IReadOnlyList<ProcessingJobDto>> GetAllAsync(CancellationToken ct = default)
@@ -344,6 +345,17 @@ public sealed class ProcessingJobService(
             case ProcessingJobType.ArchiveProfileHistory:
                 await datasetProfileService.ArchiveHistoryAsync(180, ct);
                 await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived profile history older than 180 days.", ct);
+                break;
+
+            case ProcessingJobType.SyncPlatformLineage:
+                var lineageSync = await lineageService.SyncPlatformAsync(200, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info",
+                    $"Lineage sync status={lineageSync.Status}; relationships={lineageSync.RelationshipsAdded}; entities={lineageSync.EntitiesAdded}.", ct);
+                break;
+
+            case ProcessingJobType.ArchiveLineageHistory:
+                await lineageService.ArchiveHistoryAsync(365, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived lineage capture logs older than 365 days.", ct);
                 break;
 
             default:

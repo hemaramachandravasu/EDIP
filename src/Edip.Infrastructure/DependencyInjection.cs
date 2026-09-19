@@ -40,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IDatasetProfileRepository, DatasetProfileRepository>();
         services.AddScoped<IAnalyticsRepository, AnalyticsRepository>();
         services.AddScoped<ILineageRepository, LineageRepository>();
+        services.AddScoped<IGovernanceRepository, GovernanceRepository>();
 
         services.AddSingleton<FileProbe>();
         services.AddSingleton<IConnectionProbe, SqlServerProbe>();
@@ -62,6 +63,7 @@ public static class DependencyInjection
         services.AddScoped<IDatasetProfileService, DatasetProfileService>();
         services.AddScoped<IAnalyticsService, AnalyticsService>();
         services.AddScoped<ILineageService, LineageService>();
+        services.AddScoped<IGovernanceService, GovernanceService>();
 
         return services;
     }

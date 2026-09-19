@@ -34,6 +34,10 @@
 :r .\36_Procs_Lineage.sql
 :r .\37_Views_Lineage.sql
 :r .\38_Seed_Lineage.sql
+:r .\41_Schema_Governance.sql
+:r .\42_Procs_Governance.sql
+:r .\43_Views_Governance.sql
+:r .\44_Seed_Governance.sql
 
-PRINT 'EDIP core + quality + ingestion + ETL + profile + analytics + lineage deployment complete. Run 09/14/19/24/29/39 Agent scripts after publishing Edip.Worker; 34_SqlAgentJobs_Analytics.sql runs standalone (TSQL subsystem).';
+PRINT 'EDIP core + quality + ingestion + ETL + profile + analytics + lineage + governance deployment complete. Run 09/14/19/24/29/39/45 Agent scripts after publishing Edip.Worker; 34_SqlAgentJobs_Analytics.sql runs standalone (TSQL subsystem).';
 GO

@@ -3,7 +3,7 @@
 ## Database
 - Name: `EDIP`
 - Engine: Microsoft SQL Server
-- Deployment scripts: `database/01_*.sql` … `database/38_*.sql` (orchestrated by `00_DeployAll.sql`)
+- Deployment scripts: `database/01_*.sql` … `database/44_*.sql` (orchestrated by `00_DeployAll.sql`)
 
 ## Schema map
 
@@ -87,6 +87,16 @@ Views and procedures:
 | DatasetVersion | Append-only dataset versions |
 | LineageRelationship | Directed edges with process/version context |
 | LineageCaptureLog | Sync/capture audit |
+
+### Governance (`gov`)
+| Table | Description |
+|-------|-------------|
+| Classification / GovernanceStatus / CertificationStatus / AccessLevel | Reference catalogs |
+| AppUser / Role / UserRole / WorkspaceMember | Minimal identity & workspace membership |
+| DatasetGovernance | Classification, owner/steward, cert status on datasets |
+| CertificationHistory | Append-only certification/review history |
+| AccessRequest / DatasetAccessGrant | Access workflow + effective grants |
+| GovernanceAuditEvent | Governance operation audit |
 
 ## Indexing highlights
 - Filtered unique index on `reg.DataSource(Name)` where not deleted

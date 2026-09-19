@@ -208,3 +208,26 @@ public interface ILineageRepository
     Task<IReadOnlyList<DTOs.LineageDatasetToReportRow>> GetDatasetToReportAsync(Guid? workspaceId, CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.LineageDepthRow>> GetDependencyDepthAsync(Guid? workspaceId, int maxDepth, CancellationToken ct = default);
 }
+
+public interface IGovernanceRepository
+{
+    Task<DTOs.DatasetGovernanceDto> UpsertAsync(string datasetCode, DTOs.UpsertDatasetGovernanceRequest request, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetGovernanceDto>> GetAsync(string? datasetCode, Guid? workspaceId, CancellationToken ct = default);
+    Task<DTOs.DatasetGovernanceDto> CertifyAsync(string datasetCode, DTOs.CertifyDatasetRequest request, CancellationToken ct = default);
+    Task<DTOs.DatasetGovernanceDto> SubmitForReviewAsync(string datasetCode, DTOs.SubmitReviewRequest request, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CertificationHistoryRow>> GetCertificationHistoryAsync(string datasetCode, CancellationToken ct = default);
+    Task<DTOs.AccessRequestActionResult> SubmitAccessRequestAsync(DTOs.SubmitAccessRequest request, CancellationToken ct = default);
+    Task<DTOs.AccessRequestActionResult> ApproveAccessRequestAsync(Guid accessRequestId, DTOs.ReviewAccessRequest request, CancellationToken ct = default);
+    Task<DTOs.AccessRequestActionResult> RejectAccessRequestAsync(Guid accessRequestId, DTOs.ReviewAccessRequest request, CancellationToken ct = default);
+    Task<DTOs.AccessRequestActionResult> RevokeAccessAsync(DTOs.RevokeAccessRequest request, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.AccessRequestDto>> GetPendingAccessRequestsAsync(Guid? workspaceId, string? datasetCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.AccessRequestDto>> GetAccessRequestHistoryAsync(string? datasetCode, string? userName, Guid? workspaceId, int take, CancellationToken ct = default);
+    Task<DTOs.PolicyEvaluationDto> EvaluateAccessAsync(string datasetCode, string userName, string requiredAccessLevel, CancellationToken ct = default);
+    Task<DTOs.GovernanceSummaryDto> GetSummaryAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ClassificationCountRow>> GetByClassificationAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.GovernanceStatusCountRow>> GetStatusDistributionAsync(Guid? workspaceId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.AccessRequestsByWorkspaceRow>> GetAccessRequestsByWorkspaceAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.GovernanceAuditRow>> GetAuditEventsAsync(string? datasetCode, string? eventType, int take, CancellationToken ct = default);
+    Task<int> ExpireCertificationsAsync(CancellationToken ct = default);
+    Task ArchiveAuditAsync(int retainDays, CancellationToken ct = default);
+}

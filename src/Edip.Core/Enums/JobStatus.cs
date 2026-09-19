@@ -35,5 +35,7 @@ public enum ProcessingJobType
     DatasetQualityProfile = 14,
     ArchiveProfileHistory = 15,
     SyncPlatformLineage = 16,
-    ArchiveLineageHistory = 17
+    ArchiveLineageHistory = 17,
+    ExpireDatasetCertifications = 18,
+    ArchiveGovernanceAudit = 19
 }

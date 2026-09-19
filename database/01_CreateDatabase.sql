@@ -51,5 +51,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'lineage')
     EXEC(N'CREATE SCHEMA lineage AUTHORIZATION dbo;');
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'gov')
+    EXEC(N'CREATE SCHEMA gov AUTHORIZATION dbo;');
+GO
+
 PRINT 'EDIP database and schemas ready.';
 GO

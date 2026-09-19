@@ -17,6 +17,7 @@ public sealed class ProcessingJobService(
     IEtlService etlService,
     IDatasetProfileService datasetProfileService,
     ILineageService lineageService,
+    IGovernanceService governanceService,
     ILogger<ProcessingJobService> logger) : IProcessingJobService
 {
     public async Task<IReadOnlyList<ProcessingJobDto>> GetAllAsync(CancellationToken ct = default)
@@ -356,6 +357,17 @@ public sealed class ProcessingJobService(
             case ProcessingJobType.ArchiveLineageHistory:
                 await lineageService.ArchiveHistoryAsync(365, ct);
                 await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived lineage capture logs older than 365 days.", ct);
+                break;
+
+            case ProcessingJobType.ExpireDatasetCertifications:
+                var expired = await governanceService.ExpireCertificationsAsync(ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info",
+                    $"Expired {expired} dataset certification(s).", ct);
+                break;
+
+            case ProcessingJobType.ArchiveGovernanceAudit:
+                await governanceService.ArchiveAuditAsync(730, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived governance audit events older than 730 days.", ct);
                 break;
 
             default:

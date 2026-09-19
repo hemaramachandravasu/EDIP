@@ -138,6 +138,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [Dataset Quality Profiling](docs/13-Dataset-Quality-Profiling.md)
 - [SQL Analytics & Reporting Engine](docs/14-SQL-Analytics-Reporting-Engine.md)
 - [SQL Lineage Engine](docs/15-SQL-Lineage-Engine.md)
+- [SQL Governance Engine](docs/16-SQL-Governance-Engine.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -265,6 +266,29 @@ Deploy SQL scripts `35`–`38` (included in `00_DeployAll.sql` /
 See [SQL Lineage Engine](docs/15-SQL-Lineage-Engine.md) and
 [lineage test scenarios](samples/LINEAGE_TEST_SCENARIOS.md).
 
+## SQL Data Governance, Classification & Access Policy
+
+Dataset classification, certification lifecycle, access requests/grants,
+policy evaluation, and governance dashboards.
+
+```http
+GET  /api/governance/datasets/CUSTOMER
+PUT  /api/governance/datasets/CUSTOMER
+POST /api/governance/datasets/CUSTOMER/certify
+GET  /api/governance/datasets/CUSTOMER/certification-history
+POST /api/governance/access-requests
+POST /api/governance/access-requests/{id}/approve
+GET  /api/governance/access-requests/pending
+GET  /api/governance/policy/evaluate?datasetCode=CUSTOMER&userName=gov.analyst&requiredAccessLevel=Write
+GET  /api/governance/reports/summary
+GET  /api/governance/reports/by-classification
+GET  /api/governance/audit
+```
+
+Deploy SQL scripts `41`–`44`, optionally `45_SqlAgentJobs_Governance.sql`.  
+See [SQL Governance Engine](docs/16-SQL-Governance-Engine.md) and
+[governance test scenarios](samples/GOVERNANCE_TEST_SCENARIOS.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -279,3 +303,4 @@ See [SQL Lineage Engine](docs/15-SQL-Lineage-Engine.md) and
 11. Dataset quality profiling (completeness, uniqueness, validity, stats, scores, thresholds, trends)
 12. SQL analytics & reporting engine (workspace/dataset/import/quality KPIs, window-function trends, dataset comparison, dashboard feeds, pre-aggregated fact + Agent refresh, CSV/Excel export)
 13. SQL lineage / dependency / impact analysis (entity graph, versions, recursive upstream/downstream, circular guards, workspace filters, dashboard analytics)
+14. SQL data governance (classification, certification history, access requests/grants, policy evaluation, governance audit & reporting)

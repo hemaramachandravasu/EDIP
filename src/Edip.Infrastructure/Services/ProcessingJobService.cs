@@ -18,6 +18,7 @@ public sealed class ProcessingJobService(
     IDatasetProfileService datasetProfileService,
     ILineageService lineageService,
     IGovernanceService governanceService,
+    ISharingService sharingService,
     ILogger<ProcessingJobService> logger) : IProcessingJobService
 {
     public async Task<IReadOnlyList<ProcessingJobDto>> GetAllAsync(CancellationToken ct = default)
@@ -368,6 +369,18 @@ public sealed class ProcessingJobService(
             case ProcessingJobType.ArchiveGovernanceAudit:
                 await governanceService.ArchiveAuditAsync(730, ct);
                 await jobRepository.AddExecutionLogAsync(executionId, "Info", "Archived governance audit events older than 730 days.", ct);
+                break;
+
+            case ProcessingJobType.ExpireDatasetShares:
+                var expiredShares = await sharingService.ExpireSharesAsync(ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info",
+                    $"Marked {expiredShares} dataset share(s) as Expired.", ct);
+                break;
+
+            case ProcessingJobType.CleanupStaleExports:
+                var cleanup = await sharingService.CleanupStaleExportsAsync(120, 72, ct);
+                await jobRepository.AddExecutionLogAsync(executionId, "Info",
+                    $"Timed out {cleanup.TimedOutCount} processing export(s); cancelled {cleanup.AbandonedCount} abandoned pending export(s).", ct);
                 break;
 
             default:

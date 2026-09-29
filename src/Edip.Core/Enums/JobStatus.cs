@@ -37,5 +37,7 @@ public enum ProcessingJobType
     SyncPlatformLineage = 16,
     ArchiveLineageHistory = 17,
     ExpireDatasetCertifications = 18,
-    ArchiveGovernanceAudit = 19
+    ArchiveGovernanceAudit = 19,
+    ExpireDatasetShares = 20,
+    CleanupStaleExports = 21
 }

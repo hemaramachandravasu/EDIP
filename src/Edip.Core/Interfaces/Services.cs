@@ -184,6 +184,39 @@ public interface IGovernanceService
     Task ArchiveAuditAsync(int retainDays = 730, CancellationToken ct = default);
 }
 
+public interface ISharingService
+{
+    Task<DTOs.ShareActionResult> CreateShareAsync(DTOs.CreateShareRequest request, CancellationToken ct = default);
+    Task<DTOs.ShareActionResult> UpdateShareAsync(Guid shareId, DTOs.UpdateShareRequest request, CancellationToken ct = default);
+    Task<DTOs.ShareActionResult> RevokeShareAsync(Guid shareId, DTOs.RevokeShareRequest request, CancellationToken ct = default);
+    Task<DTOs.DatasetShareDto?> GetShareAsync(Guid shareId, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetShareDto>> GetActiveSharesAsync(string? datasetCode = null, string? recipientUserName = null, Guid? workspaceId = null, CancellationToken ct = default);
+    Task<DTOs.PagedList<DTOs.DatasetShareDto>> GetSharesAsync(string? datasetCode = null, string? recipientUserName = null, Guid? workspaceId = null, string? effectiveStatus = null, int pageNumber = 1, int pageSize = 50, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.DatasetShareDto>> GetExpiredSharesAsync(Guid? workspaceId = null, bool onlyUnmarked = false, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ShareHistoryRow>> GetShareHistoryAsync(Guid? shareId = null, string? datasetCode = null, string? recipientUserName = null, int take = 100, CancellationToken ct = default);
+    Task<int> ExpireSharesAsync(CancellationToken ct = default);
+
+    Task<DTOs.ExportAccessEvaluationDto> EvaluateExportAccessAsync(string datasetCode, string userName, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ExportableColumnDto>> GetExportableColumnsAsync(string datasetCode, CancellationToken ct = default);
+    Task<int> SyncExportableColumnsAsync(string? datasetCode = null, CancellationToken ct = default);
+
+    Task<DTOs.ExportActionResult> SubmitExportAsync(DTOs.SubmitExportRequest request, CancellationToken ct = default);
+    Task<DTOs.ExportActionResult> TransitionExportAsync(Guid exportRequestId, DTOs.TransitionExportRequest request, CancellationToken ct = default);
+    Task<DTOs.ExportActionResult> ClaimNextExportAsync(CancellationToken ct = default);
+    Task<DTOs.ExportRequestDetailDto?> GetExportRequestAsync(Guid exportRequestId, CancellationToken ct = default);
+    Task<DTOs.ExportDataPageDto> GetExportDataAsync(Guid exportRequestId, string? userName = null, int pageSize = 5000, int pageNumber = 1, string? afterKey = null, bool includeTotalCount = false, CancellationToken ct = default);
+    Task<DTOs.ExportDownloadResult> RecordDownloadAsync(Guid exportRequestId, DTOs.RecordDownloadRequest request, CancellationToken ct = default);
+    Task<DTOs.PagedList<DTOs.ExportRequestDto>> GetExportHistoryAsync(DTOs.ExportHistoryQuery query, CancellationToken ct = default);
+    Task<DTOs.ExportCleanupResult> CleanupStaleExportsAsync(int processingTimeoutMinutes = 120, int pendingTimeoutHours = 72, CancellationToken ct = default);
+
+    Task<DTOs.ExportSummaryDto> GetExportSummaryAsync(Guid? workspaceId = null, DateTime? fromUtc = null, DateTime? toUtc = null, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ExportCountRow>> GetExportsByFormatAsync(Guid? workspaceId = null, DateTime? fromUtc = null, DateTime? toUtc = null, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ExportCountRow>> GetExportsByDatasetAsync(Guid? workspaceId = null, DateTime? fromUtc = null, DateTime? toUtc = null, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ExportCountRow>> GetExportsByUserAsync(Guid? workspaceId = null, DateTime? fromUtc = null, DateTime? toUtc = null, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ExportActivityRow>> GetExportActivityAsync(int days = 30, Guid? workspaceId = null, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.ShareStatusSummaryRow>> GetShareStatusSummaryAsync(Guid? workspaceId = null, CancellationToken ct = default);
+}
+
 public interface IIngestionService
 {
     Task<IReadOnlyList<DTOs.IngestDatasetDto>> GetDatasetsAsync(CancellationToken ct = default);

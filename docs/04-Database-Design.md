@@ -3,7 +3,7 @@
 ## Database
 - Name: `EDIP`
 - Engine: Microsoft SQL Server
-- Deployment scripts: `database/01_*.sql` … `database/44_*.sql` (orchestrated by `00_DeployAll.sql`)
+- Deployment scripts: `database/01_*.sql` … `database/50_*.sql` (orchestrated by `00_DeployAll.sql`)
 
 ## Schema map
 
@@ -96,7 +96,17 @@ Views and procedures:
 | DatasetGovernance | Classification, owner/steward, cert status on datasets |
 | CertificationHistory | Append-only certification/review history |
 | AccessRequest / DatasetAccessGrant | Access workflow + effective grants |
-| GovernanceAuditEvent | Governance operation audit |
+| GovernanceAuditEvent | Governance operation audit (also records share/export events) |
+
+### Sharing & export (`share`)
+| Table | Description |
+|-------|-------------|
+| ExportFormat / ExportStatus / ExportStatusTransition | Reference catalogs + allowed status transitions |
+| ExportPolicy | Per-classification minimum access level / certification requirement for export |
+| DatasetShare / DatasetShareHistory | Current share state (one active per dataset+recipient) + append-only history |
+| ExportableColumn | Whitelist of exportable/filterable/sortable columns per dataset |
+| ExportRequest / ExportRequestSpec | Narrow request header + 1:1 JSON spec (columns, filters, sort) |
+| ExportStatusHistory / ExportDownload | Append-only status transitions and download log |
 
 ## Indexing highlights
 - Filtered unique index on `reg.DataSource(Name)` where not deleted

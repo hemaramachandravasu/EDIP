@@ -139,6 +139,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [SQL Analytics & Reporting Engine](docs/14-SQL-Analytics-Reporting-Engine.md)
 - [SQL Lineage Engine](docs/15-SQL-Lineage-Engine.md)
 - [SQL Governance Engine](docs/16-SQL-Governance-Engine.md)
+- [SQL Data Sharing, Export & Secure Delivery Engine](docs/17-SQL-Data-Sharing-Export-Engine.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -289,6 +290,34 @@ Deploy SQL scripts `41`–`44`, optionally `45_SqlAgentJobs_Governance.sql`.
 See [SQL Governance Engine](docs/16-SQL-Governance-Engine.md) and
 [governance test scenarios](samples/GOVERNANCE_TEST_SCENARIOS.md).
 
+## SQL Data Sharing, Export & Secure Delivery
+
+Controlled dataset sharing (active / expired / revoked with history),
+export requests with a validated status state machine, database-side
+export authorization (workspace membership, RBAC, grants, shares,
+classification policy, certification), server-side filtered and paged
+export data, download tracking, audit, and export reporting.
+
+```http
+POST /api/sharing/shares
+PUT  /api/sharing/shares/{shareId}
+POST /api/sharing/shares/{shareId}/revoke
+GET  /api/sharing/shares/active?datasetCode=CUSTOMER
+GET  /api/sharing/shares?status=Expired
+GET  /api/sharing/access/evaluate?datasetCode=CUSTOMER&userName=gov.analyst
+POST /api/sharing/exports
+POST /api/sharing/exports/{id}/transition
+GET  /api/sharing/exports/{id}/data?userName=gov.analyst&pageSize=1000&afterKey=...
+POST /api/sharing/exports/{id}/download
+GET  /api/sharing/exports?userName=gov.analyst&status=Failed
+GET  /api/sharing/reports/summary
+GET  /api/sharing/reports/activity?days=30
+```
+
+Deploy SQL scripts `47`–`50`, optionally `51_SqlAgentJobs_Sharing.sql`; run `52_Tests_Sharing.sql` for assertions.  
+See [SQL Data Sharing & Export Engine](docs/17-SQL-Data-Sharing-Export-Engine.md) and
+[sharing test scenarios](samples/SHARING_TEST_SCENARIOS.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -304,3 +333,4 @@ See [SQL Governance Engine](docs/16-SQL-Governance-Engine.md) and
 12. SQL analytics & reporting engine (workspace/dataset/import/quality KPIs, window-function trends, dataset comparison, dashboard feeds, pre-aggregated fact + Agent refresh, CSV/Excel export)
 13. SQL lineage / dependency / impact analysis (entity graph, versions, recursive upstream/downstream, circular guards, workspace filters, dashboard analytics)
 14. SQL data governance (classification, certification history, access requests/grants, policy evaluation, governance audit & reporting)
+15. SQL data sharing & secure export (dataset shares with expiry/revocation history, export request state machine, database-side export authorization, server-side filtered/paged export data, download audit, export reporting)

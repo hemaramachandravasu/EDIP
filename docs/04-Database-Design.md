@@ -3,7 +3,7 @@
 ## Database
 - Name: `EDIP`
 - Engine: Microsoft SQL Server
-- Deployment scripts: `database/01_*.sql` … `database/50_*.sql` (orchestrated by `00_DeployAll.sql`)
+- Deployment scripts: `database/01_*.sql` … `database/56_*.sql` (orchestrated by `00_DeployAll.sql`)
 
 ## Schema map
 
@@ -108,6 +108,14 @@ Views and procedures:
 | ExportRequest / ExportRequestSpec | Narrow request header + 1:1 JSON spec (columns, filters, sort) |
 | ExportStatusHistory / ExportDownload | Append-only status transitions and download log |
 
+### Data catalog (`cat`)
+The catalog is a query layer over existing tables (no catalog dataset table); see `docs/18-SQL-Data-Catalog-Discovery.md`.
+
+| Table | Description |
+|-------|-------------|
+| Tag / DatasetTag | The platform's single dataset tag structure (lower-case unique tag names, dataset ↔ tag link) |
+| DiscoveryPolicy | Per-classification minimum workspace role needed to discover a dataset |
+
 ## Indexing highlights
 - Filtered unique index on `reg.DataSource(Name)` where not deleted
 - `jobs.JobSchedule(NextRunUtc)` filtered to active schedules for due scans
@@ -116,6 +124,7 @@ Views and procedures:
 - `ingest.StagingCustomer(BatchId, RowStatus)` for validation/process set operations
 - Unique `ingest.Customer(CustomerCode)` for MERGE upserts
 - `etl.EtlRun(DatasetId, StartedUtc)` and `etl.EtlError(BatchId, ErrorCode)` for monitoring
+- `ingest.ImportBatch(DatasetId, ImportUtc DESC) INCLUDE (DataSourceId)` filtered to batches with a registered source (catalog source type, ~15% fewer reads measured)
 
 ## Security considerations
 - Encrypted passwords stored only in `reg.SqlConnectionDetail.EncryptedPassword`

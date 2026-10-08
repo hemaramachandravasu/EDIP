@@ -42,6 +42,10 @@
 :r .\48_Procs_Sharing.sql
 :r .\49_Views_Sharing.sql
 :r .\50_Seed_Sharing.sql
+:r .\53_Schema_Catalog.sql
+:r .\54_Procs_Catalog.sql
+:r .\55_Views_Catalog.sql
+:r .\56_Seed_Catalog.sql
 
-PRINT 'EDIP core + quality + ingestion + ETL + profile + analytics + lineage + governance + sharing deployment complete. Run 09/14/19/24/29/39/45/51 Agent scripts after publishing Edip.Worker; 34_SqlAgentJobs_Analytics.sql runs standalone (TSQL subsystem).';
+PRINT 'EDIP core + quality + ingestion + ETL + profile + analytics + lineage + governance + sharing + catalog deployment complete. Run 09/14/19/24/29/39/45/51 Agent scripts after publishing Edip.Worker; 34_SqlAgentJobs_Analytics.sql runs standalone (TSQL subsystem).';
 GO

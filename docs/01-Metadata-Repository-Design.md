@@ -42,6 +42,6 @@ erDiagram
 - **File sources** are modeled as a single logical table whose columns come from the header row.
 
 ## Extension points
-- Add `meta.Tag` / `meta.ObjectTag` for business glossary tagging.
+- Dataset tagging is implemented by `cat.Tag` / `cat.DatasetTag` (see `docs/18-SQL-Data-Catalog-Discovery.md`); extend that structure for business glossary tagging of other objects rather than adding a second tag store.
 - Add column-level profiling stats (`NullPct`, `DistinctCount`) without changing the core object model.
 - Introduce soft versioning (`SnapshotId`) if concurrent consumers need point-in-time reads.

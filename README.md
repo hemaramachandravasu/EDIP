@@ -140,6 +140,7 @@ Then run `database/09_SqlAgentJobs.sql` (set `@WorkerPath` to the published exe)
 - [SQL Lineage Engine](docs/15-SQL-Lineage-Engine.md)
 - [SQL Governance Engine](docs/16-SQL-Governance-Engine.md)
 - [SQL Data Sharing, Export & Secure Delivery Engine](docs/17-SQL-Data-Sharing-Export-Engine.md)
+- [SQL Data Catalog, Discovery & Metadata Search](docs/18-SQL-Data-Catalog-Discovery.md)
 
 ## Data Quality module (profiling / scoring / sync)
 
@@ -318,6 +319,37 @@ Deploy SQL scripts `47`–`50`, optionally `51_SqlAgentJobs_Sharing.sql`; run `5
 See [SQL Data Sharing & Export Engine](docs/17-SQL-Data-Sharing-Export-Engine.md) and
 [sharing test scenarios](samples/SHARING_TEST_SCENARIOS.md).
 
+## SQL Data Catalog, Discovery & Metadata Search
+
+An access-aware catalog query layer over the existing dataset, workspace,
+governance, quality, lineage, import and tag data, with no duplicate catalog
+table and no external search engine. It provides:
+- Partial, case-insensitive, parameterized search with deterministic relevance (Name > Code > Tags > Description).
+- Optional, composable filters.
+- Validated sorting, with offset and keyset paging.
+- A consolidated dataset detail call.
+- Tag management.
+- Catalog summary reports.
+
+Discovery respects workspace membership, RBAC, grants, shares, classification
+and governance status.
+
+```http
+GET  /api/catalog/datasets?userName=gov.viewer&searchText=customer&tags=gold&sortBy=Relevance
+GET  /api/catalog/datasets?userName=gov.admin&classificationCode=Confidential&minQualityScore=60
+GET  /api/catalog/datasets?userName=gov.admin&sortBy=Name&afterValue=...&afterDatasetId=...
+GET  /api/catalog/datasets/CUSTOMER?userName=gov.viewer&includeHistory=true
+GET  /api/catalog/tags?userName=gov.viewer
+POST /api/catalog/datasets/ORDER/tags
+POST /api/catalog/datasets/ORDER/tags/remove
+GET  /api/catalog/reports/summary?userName=gov.viewer
+GET  /api/catalog/reports/quality-distribution?userName=gov.admin
+```
+
+Deploy SQL scripts `53`–`56`. Run `57_Tests_Catalog.sql` for the 99 assertions, and `58_Perf_Catalog.sql` for the rolled-back 20k-dataset benchmark.  
+See [SQL Data Catalog & Discovery](docs/18-SQL-Data-Catalog-Discovery.md) and
+[catalog test scenarios](samples/CATALOG_TEST_SCENARIOS.md).
+
 ## Capabilities covered
 1. Data source registry (SQL Server, MySQL, PostgreSQL, CSV, Excel) with validation & health
 2. Metadata repository (tables, views, columns, types, relationships, refresh history)
@@ -334,3 +366,4 @@ See [SQL Data Sharing & Export Engine](docs/17-SQL-Data-Sharing-Export-Engine.md
 13. SQL lineage / dependency / impact analysis (entity graph, versions, recursive upstream/downstream, circular guards, workspace filters, dashboard analytics)
 14. SQL data governance (classification, certification history, access requests/grants, policy evaluation, governance audit & reporting)
 15. SQL data sharing & secure export (dataset shares with expiry/revocation history, export request state machine, database-side export authorization, server-side filtered/paged export data, download audit, export reporting)
+16. SQL data catalog & discovery (access-aware discovery, partial/case-insensitive metadata search with deterministic relevance, composable filters, validated sort + offset/keyset paging, consolidated dataset detail, dataset tags, catalog summary reports, measured index decisions)

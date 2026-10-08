@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<ILineageRepository, LineageRepository>();
         services.AddScoped<IGovernanceRepository, GovernanceRepository>();
         services.AddScoped<ISharingRepository, SharingRepository>();
+        services.AddScoped<ICatalogRepository, CatalogRepository>();
 
         services.AddSingleton<FileProbe>();
         services.AddSingleton<IConnectionProbe, SqlServerProbe>();
@@ -66,6 +67,7 @@ public static class DependencyInjection
         services.AddScoped<ILineageService, LineageService>();
         services.AddScoped<IGovernanceService, GovernanceService>();
         services.AddScoped<ISharingService, SharingService>();
+        services.AddScoped<ICatalogService, CatalogService>();
 
         return services;
     }

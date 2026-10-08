@@ -59,5 +59,9 @@ IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'share')
     EXEC(N'CREATE SCHEMA share AUTHORIZATION dbo;');
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'cat')
+    EXEC(N'CREATE SCHEMA cat AUTHORIZATION dbo;');
+GO
+
 PRINT 'EDIP database and schemas ready.';
 GO

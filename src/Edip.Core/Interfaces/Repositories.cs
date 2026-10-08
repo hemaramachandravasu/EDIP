@@ -265,3 +265,23 @@ public interface ISharingRepository
     Task<IReadOnlyList<DTOs.ExportActivityRow>> GetExportActivityAsync(int days, Guid? workspaceId, CancellationToken ct = default);
     Task<IReadOnlyList<DTOs.ShareStatusSummaryRow>> GetShareStatusSummaryAsync(Guid? workspaceId, CancellationToken ct = default);
 }
+
+public interface ICatalogRepository
+{
+    Task<DTOs.CatalogSearchResult> SearchAsync(DTOs.CatalogSearchQuery query, CancellationToken ct = default);
+    Task<DTOs.CatalogDetailResult> GetDatasetDetailAsync(string datasetCode, string userName, int recentImportCount,
+        int lineageNeighborLimit, bool includeHistory, int historyCount, CancellationToken ct = default);
+
+    Task<DTOs.CatalogTagListResult> GetTagsAsync(string userName, string? search, bool includeUnused, CancellationToken ct = default);
+    Task<DTOs.DatasetTagActionResult> AddDatasetTagsAsync(string datasetCode, string tagsCsv, string userName, CancellationToken ct = default);
+    Task<DTOs.DatasetTagActionResult> RemoveDatasetTagsAsync(string datasetCode, string tagsCsv, string userName, CancellationToken ct = default);
+
+    Task<DTOs.CatalogSummaryDto> GetSummaryAsync(string userName, string? workspaceCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CatalogCountRow>> GetByClassificationAsync(string userName, string? workspaceCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CatalogCountRow>> GetByGovernanceStatusAsync(string userName, string? workspaceCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CatalogCountRow>> GetByCategoryAsync(string userName, string? workspaceCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CatalogCertificationRow>> GetCertificationAsync(string userName, string? workspaceCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CatalogQualityBucketRow>> GetQualityDistributionAsync(string userName, string? workspaceCode, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CatalogRecentDatasetRow>> GetRecentlyUpdatedAsync(string userName, string? workspaceCode, int days, int top, CancellationToken ct = default);
+    Task<IReadOnlyList<DTOs.CatalogRecentDatasetRow>> GetRecentlyImportedAsync(string userName, string? workspaceCode, int days, int top, CancellationToken ct = default);
+}
